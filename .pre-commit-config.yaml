@@ -1,0 +1,33 @@
+# pre-commit install --hook-type commit-msg
+---
+repos:
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v2.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: []  # optional: list of Conventional Commits types to allow e.g.
+  - repo: local
+    hooks:
+      - id: nixpkgs-fmt
+        name: nixpkgs-fmt
+        description: Format nix code with nixpkgs-fmt.
+        language: system
+        entry: nixpkgs-fmt
+        files: \.nix$
+        stages: [commit]
+      - id: "markdownlint"
+        name: "markdownlint"
+        description: Format markdown code with markdownlint.
+        language: system
+        entry: markdownlint
+        stages: [commit]
+        files: \.md$
+      - id: "denofmt"
+        name: "denofmt"
+        description: Format deno code with deno.
+        language: system
+        entry: deno fmt --check **/*.ts
+        stages: [commit]
+        files: \.ts$
+

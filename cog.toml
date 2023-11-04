@@ -1,0 +1,27 @@
+tag_prefix = "v"
+ignore_merge_commits = true
+branch_whitelist = ["main"]
+pre_bump_hooks = [
+  "echo {{version}}",
+]
+post_bump_hooks = [
+  "git push",
+  "git push origin v{{version}}",
+]
+
+[commit_types]
+ # Default types: feat, fix, build, ci, revert, docs, test, style, chore, perf
+# Custom types:
+#release = { changelog_title = "Releases" }
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote"
+remote = "github.com"
+owner = "badele"
+repository = "nix-projects"
+authors = [
+    { username = "badele", signature = "Bruno Adelé" }
+]
+
+[bump_profiles]

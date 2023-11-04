@@ -1,0 +1,40 @@
+---
+name: CI
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  cog_check_job:
+    runs-on: ubuntu-latest
+    name: check conventional commit compliance
+    steps:
+      - uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+
+      - name: Conventional commits check
+        uses: oknozor/cocogitto-action@v3
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        deno: [1.37.0, 1.36.0, 1.35.0]
+    name: Test with Deno ${{ matrix.deno }}
+
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Setup Deno
+        uses: denolib/setup-deno@master
+        with:
+          deno-version: ${{ matrix.deno }}
+
+      - name: Print deno version
+        run: deno --version
+
+      - name: Check format
+        run: deno fmt --check **/*.ts
+
+      - name: Run tests
+        run: deno test
