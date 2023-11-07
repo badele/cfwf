@@ -18,7 +18,11 @@
               nodePackages.markdownlint-cli
               pre-commit
 
+              just
+              bkt
+
               deno
+              lcov
             ];
             shellHook = ''
               export PROJ="cfwf"
@@ -26,7 +30,7 @@
               echo ""
               echo "⭐ Welcome to the $PROJ project ⭐"
               echo ""
-              hello
+              just
               echo ""
             '';
           };

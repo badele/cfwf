@@ -1,2 +1,1 @@
-export { bold } from "./deps.ts";
-export { getHelloWorld } from "./src/hello.ts";
+export { Align, arrayToCFWF } from "./src/cfwf_writer.ts";

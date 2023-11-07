@@ -4,37 +4,76 @@ name: CI
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  cog_check_job:
+  check_requirements:
     runs-on: ubuntu-latest
-    name: check conventional commit compliance
+    name: Check CI requirements
+    steps:
+      - name: check requirements
+        run: |
+          test -n "${{ secrets.CODECOV_TOKEN }}" || (echo "Please define CODECOV_TOKEN into github repo setting"; exit 1)
+
+  lint:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
-        with:
-          fetch-depth: 0
 
       - name: Conventional commits check
         uses: oknozor/cocogitto-action@v3
 
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        deno: [1.37.0, 1.36.0, 1.35.0]
-    name: Test with Deno ${{ matrix.deno }}
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just@1.14.0
 
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.36.0
+
+      - name: Format
+        run: deno fmt --check
+
+      - name: Lint
+        run: just lint
+
+      - name: coverage
+        run: just coverage
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: ./.coverage/cov.lcov
+
+  test:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        deno:
+          - v1.x
+          - canary
+        os:
+          - ubuntu-22.04
+          - windows-2022
+          - macOS-12
     steps:
       - uses: actions/checkout@main
 
-      - name: Setup Deno
-        uses: denolib/setup-deno@master
+      - uses: taiki-e/install-action@v2
         with:
-          deno-version: ${{ matrix.deno }}
+          tool: just@1.14.0
 
-      - name: Print deno version
-        run: deno --version
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.36.0
 
-      - name: Check format
-        run: deno fmt --check **/*.ts
+      - name: coverage
+        run: just coverage
 
-      - name: Run tests
-        run: deno test
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: ./.coverage/cov.lcov
