@@ -1,5 +1,5 @@
 // mod_test.ts
-import { assertEquals, assertRejects, assertThrows } from "../test_deps.ts";
+import { assertEquals, assertRejects } from "../test_deps.ts";
 import { Align, arrayToCFWF } from "../mod.ts";
 
 const { test } = Deno;
@@ -29,68 +29,68 @@ const datas_options = {
   title: "Test",
 };
 
-const cryptos = [
-  [
-    "2023-11-04",
-    "yahoo",
-    "ADA-EUR",
-    "Cardano EUR",
-    0.30382475,
-    "EUR",
-    0.0089045465,
-    3.02,
-  ],
-  [
-    "2023-11-04",
-    "yahoo",
-    "BTC-EUR",
-    "Bitcoin EUR",
-    32382.293,
-    "EUR",
-    523.85547,
-    1.64,
-  ],
-  [
-    "2023-11-04",
-    "yahoo",
-    "DOGE-EUR",
-    "Dogecoin EUR",
-    0.06409328,
-    "EUR",
-    0.0016048551,
-    2.57,
-  ],
-  [
-    "2023-11-04",
-    "yahoo",
-    "ETH-EUR",
-    "Ethereum EUR",
-    1715.4004,
-    "EUR",
-    50.568848,
-    3.04,
-  ],
-  [
-    "2023-11-04",
-    "yahoo",
-    "MATIC-EUR",
-    "Polygon EUR",
-    0.625949,
-    "EUR",
-    0.0191679,
-    3.16,
-  ],
-  [
-    "2023-11-04",
-    "yahoo",
-    "500.PA",
-    "Amundi Index Solutions - Amundi S&P 500 UCITS ETF",
-    78.79,
-    "EUR",
-    0.30999756,
-    0.4,
-  ],
-];
+// const cryptos = [
+//   [
+//     "2023-11-04",
+//     "yahoo",
+//     "ADA-EUR",
+//     "Cardano EUR",
+//     0.30382475,
+//     "EUR",
+//     0.0089045465,
+//     3.02,
+//   ],
+//   [
+//     "2023-11-04",
+//     "yahoo",
+//     "BTC-EUR",
+//     "Bitcoin EUR",
+//     32382.293,
+//     "EUR",
+//     523.85547,
+//     1.64,
+//   ],
+//   [
+//     "2023-11-04",
+//     "yahoo",
+//     "DOGE-EUR",
+//     "Dogecoin EUR",
+//     0.06409328,
+//     "EUR",
+//     0.0016048551,
+//     2.57,
+//   ],
+//   [
+//     "2023-11-04",
+//     "yahoo",
+//     "ETH-EUR",
+//     "Ethereum EUR",
+//     1715.4004,
+//     "EUR",
+//     50.568848,
+//     3.04,
+//   ],
+//   [
+//     "2023-11-04",
+//     "yahoo",
+//     "MATIC-EUR",
+//     "Polygon EUR",
+//     0.625949,
+//     "EUR",
+//     0.0191679,
+//     3.16,
+//   ],
+//   [
+//     "2023-11-04",
+//     "yahoo",
+//     "500.PA",
+//     "Amundi Index Solutions - Amundi S&P 500 UCITS ETF",
+//     78.79,
+//     "EUR",
+//     0.30999756,
+//     0.4,
+//   ],
+// ];
 
 test("Test empty array", async () => {
   const result = await arrayToCFWF([]);
