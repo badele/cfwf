@@ -2,8 +2,8 @@
 
 ## TODO cfwf project initialisation
 
-Enable **Read and write permissions** on the [Github action workflow permission](
-<https://github.com/badele/cfwf/settings/actions>)
+Enable **Read and write permissions** on the
+[Github action workflow permission](https://github.com/badele/cfwf/settings/actions)
 (for pushing the release and changelog)
 
 ## Included with this project
@@ -25,5 +25,5 @@ Enable **Read and write permissions** on the [Github action workflow permission]
     - lint
     - test
     - coverage
-  - Manually releasing a new version [release action](
-<https://github.com/badele/cfwf/actions/workflows/Release.yml>)
+  - Manually releasing a new version
+    [release action](https://github.com/badele/cfwf/actions/workflows/Release.yml)
