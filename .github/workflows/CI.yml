@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
+        with:
+          fetch-depth: 0
 
       - name: Conventional commits check
         uses: oknozor/cocogitto-action@v3
@@ -59,6 +61,8 @@ jobs:
           - macOS-12
     steps:
       - uses: actions/checkout@main
+        with:
+          fetch-depth: 0
 
       - uses: taiki-e/install-action@v2
         with:
