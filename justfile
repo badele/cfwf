@@ -11,7 +11,8 @@ BROWSER := "chromium"
   cog check
 
 # Execute test tasks
-@test:
+@test: generate-samples
+  deno run -A samples/scripts/generate_samples.ts
   rm -rf ./.coverage
   deno test --doc --unstable --allow-all --parallel --coverage=./.coverage --trace-ops
 
@@ -32,6 +33,11 @@ coverage-browse browser="chromium": coverage
   genhtml -o ./.coverage/html_cov ./.coverage/cov.lcov
   {{ browser }} ./.coverage/html_cov/index.html
 
+@import-atp:
+  ./samples/scripts/import-atp.sh
+
+@generate-samples:
+  deno run -A samples/scripts/generate_samples.ts
 
 # Run command interactively, view the result in realtime
 @view:

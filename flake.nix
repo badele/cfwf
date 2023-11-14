@@ -23,6 +23,8 @@
 
               deno
               lcov
+
+              sqlite
             ];
             shellHook = ''
               export PROJ="cfwf"

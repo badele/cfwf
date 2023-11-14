@@ -1,2 +1,5 @@
 .direnv
 .coverage
+samples/*.csv
+samples/*.db
+samples_regenerated.cfwf
