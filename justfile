@@ -11,7 +11,7 @@ BROWSER := "chromium"
   cog check
 
 # Execute test tasks
-@test: generate-samples
+@test: import-atp generate-samples
   deno run -A samples/scripts/generate_samples.ts
   rm -rf ./.coverage
   deno test --doc --unstable --allow-all --parallel --coverage=./.coverage --trace-ops

@@ -7,23 +7,23 @@
 
 .read './samples/scripts/init_schema.sql'
 
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_players.csv' players
+.import --csv 'samples/tennis_atp/atp_players.csv' players
 
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_rankings_00s.csv' rankings
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_rankings_10s.csv' rankings
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_rankings_20s.csv' rankings
+.import --csv 'samples/tennis_atp/atp_rankings_00s.csv' rankings
+.import --csv 'samples/tennis_atp/atp_rankings_10s.csv' rankings
+.import --csv 'samples/tennis_atp/atp_rankings_20s.csv' rankings
 
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2022.csv' matches
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2021.csv' matches
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2020.csv' matches
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2019.csv' matches
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2018.csv' matches
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2017.csv' matches
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2016.csv' matches
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2015.csv' matches
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2014.csv' matches
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2013.csv' matches
-.import --csv '/home/badele/ghq/github.com/JeffSackmann/tennis_atp/atp_matches_2012.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2022.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2021.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2020.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2019.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2018.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2017.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2016.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2015.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2014.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2013.csv' matches
+.import --csv 'samples/tennis_atp/atp_matches_2012.csv' matches
 
 -- SELECT ranking_date,substr(ranking_date,1,4) as year,ioc,name_first,name_last,points 
 -- FROM atp_rankings r INNER JOIN atp_players p ON (r.player=p.player_id) 

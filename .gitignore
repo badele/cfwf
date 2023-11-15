@@ -2,4 +2,5 @@
 .coverage
 samples/*.csv
 samples/*.db
+samples/tennis_atp
 samples_regenerated.cfwf

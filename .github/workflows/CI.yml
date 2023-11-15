@@ -57,7 +57,6 @@ jobs:
           - canary
         os:
           - ubuntu-22.04
-          - windows-2022
           - macOS-12
     steps:
       - uses: actions/checkout@main
