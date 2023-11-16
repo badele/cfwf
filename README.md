@@ -2,7 +2,7 @@
 
 [![Latest version](https://deno.land/badge/cfwf/version)](https://deno.land/x/cfwf)
 [![popularity](https://deno.land/badge/cfwf/popularity)](https://deno.land/x/cfwf)
-[![Build status](https://github.com/badele/cfwf/workflows/CI/badge.svg?branch=main)](https://github.com/badele/cfwf/actions/workflows/CI.yml)
+[![Build status](https://github.com/badele/cfwf/workflows/CI/badge.svg)](https://github.com/badele/cfwf/actions/workflows/CI.yml)
 [![Code coverage](https://codecov.io/gh/badele/cfwf/branch/main/graph/badge.svg)](https://codecov.io/gh/badele/cfwf)
 
 **cfwf** is a library designed to facilitate the conversion of tables or
