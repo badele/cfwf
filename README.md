@@ -1,12 +1,15 @@
-# cfwf
+<img src="logo.png" style="width: 100%" />
 
-## Introduction
+[![Latest version](https://deno.land/badge/cfwf/version)](https://deno.land/x/cfwf)
+[![popularity](https://deno.land/badge/cfwf/popularity)](https://deno.land/x/cfwf)
+[![Build status](https://github.com/badele/cfwf/workflows/CI/badge.svg?branch=main)](https://github.com/badele/cfwf/actions/workflows/CI.yml)
+[![Code coverage](https://codecov.io/gh/badele/cfwf/branch/main/graph/badge.svg)](https://codecov.io/gh/badele/cfwf)
 
 **cfwf** is a library designed to facilitate the conversion of tables or
 dictionaries into a human-readable format compatible with a simple text file
 reader.
 
-### Project Motivation
+## Project Motivation
 
 This project was initiated due to a dissatisfaction with the CSV file format,
 which is often considered unreadable without the use of dedicated tools. From my
@@ -23,6 +26,62 @@ tabular data.
   to the entire CFWF file, also for each table
 
 ## Example
+
+### Code
+
+```typescript
+import { CFWF } from "./mod.ts";
+import { parseCSV } from "./src/utils.ts";
+
+const metas: any = {
+  title: "     ATP Tour",
+  comment: "Here is a list of the best tennis players in the ATP rankings\n\
+from 2012 to 2022, as well as the list of winners of the\n\
+4 major Grand Slam tournaments.",
+  sources: [
+    "https://github.com/JeffSackmann/tennis_atp",
+  ],
+};
+
+const samples = new CFWF(metas);
+
+const players_txt = Deno.readTextFileSync("samples/players.csv");
+const players = parseCSV(players_txt);
+
+const australian_txt = Deno.readTextFileSync("samples/australian_open.csv");
+const australian = parseCSV(australian_txt);
+
+samples.addArray(
+  "players",
+  "The best players (number of winning matches) beetween 2012-2022 ",
+  "",
+  players.columns,
+  players.values,
+  {
+    aligns: ["left", "right", "left", "center", "right", "right", "right"],
+    sources: "https://github.com/JeffSackmann/tennis_atp",
+  },
+);
+
+samples.addArray(
+  "australian_open",
+  "Australian Open winners beetween 2012-2022",
+"The Australian Open is a tennis tournament held annually at Melbourne Park\n\
+in Melbourne, Victoria, Australia. The tournament is the first of the \n\
+four Grand Slam tennis events held each year.",
+  ["year", "tourney name", "birth nat", "winner"],
+  australian.values,
+  {
+    aligns: ["right", "left", "center", "center"],
+    sources: [
+      "https://fr.wikipedia.org/wiki/Open_d%27Australie",
+      "https://github.com/JeffSackmann/tennis_atp",
+    ],
+  },
+);
+```
+
+### Result
 
 ```text
             ___   _____ ______    _____                     
