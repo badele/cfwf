@@ -16,6 +16,9 @@ BROWSER := "chromium"
   rm -rf ./.coverage
   deno test --doc --unstable --allow-all --parallel --coverage=./.coverage --trace-ops
 
+# Execute some CI task
+ci: lint fmt coverage
+
 # Lint code
 @lint:
   deno lint
