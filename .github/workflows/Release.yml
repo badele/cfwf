@@ -30,8 +30,6 @@ jobs:
         run: >
           cog changelog --at "${{ steps.release.outputs.version }}" -t full_hash
           > GITHUB_CHANGELOG.md
-
-          deno fmt
       - name: Generate tool and lib version
         run: >
           sed -i src/versions.ts "s/\".*\"/\"${{ steps.release.outputs.version
