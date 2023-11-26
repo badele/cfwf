@@ -24,9 +24,13 @@ jobs:
           release: true
           git-user: github-actions
           git-user-email: github-actions@github.com
-
       - name: Release new version
-        run: ./.github/workflows/release.sh {{ steps.release.outputs.version }}
+        run: './.github/workflows/release.sh {{ steps.release.outputs.version }}'
+      - uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          message: "pre-release {{ steps.release.outputs.version }}"
+          add: ["README.md", "src/version.ts"]
 
       - name: Upload github release
         uses: softprops/action-gh-release@v1
