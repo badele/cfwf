@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 TAGVERSION=$1
-TAGVERSION="v0.1.0"
 VERSION="${TAGVERSION:1}"
 
 cog changelog --at "$TAGVERSION" -t full_hash > GITHUB_CHANGELOG.md
