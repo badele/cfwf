@@ -27,13 +27,13 @@ jobs:
       - name: Print version
         run: 'echo "${{ steps.release.outputs.version }}"'
       - name: Generate Changelog
-        run:
-          - >-
-            cog changelog --at ${{ steps.release.outputs.version }} -t full_hash
-            > GITHUB_CHANGELOG.md
-          - deno fmt
+        run: >
+          cog changelog --at "${{ steps.release.outputs.version }}" -t full_hash
+          > GITHUB_CHANGELOG.md
+
+          deno fmt
       - name: Generate tool and lib version
-        run: >-
+        run: >
           sed -i src/versions.ts "s/\".*\"/\"${{ steps.release.outputs.version
           }}\"/"
       - name: Update vesion in the Readme documentation
