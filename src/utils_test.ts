@@ -1,7 +1,7 @@
 // mod_test.ts
 import { assertEquals } from "../test_deps.ts";
+import { getCSVObject } from "./converter.ts";
 import { align, max } from "./utils.ts";
-import { parseCSV } from "./utils.ts";
 
 const { test } = Deno;
 
@@ -21,11 +21,11 @@ test("Test align", () => {
   assertEquals(align("right", "right", 10), "     right");
 });
 
-test("parseCSV", () => {
-  const players_txt = Deno.readTextFileSync("samples/players.csv");
-  const players = parseCSV(players_txt);
+test("getCSVObject", () => {
+  const players_txt = Deno.readTextFileSync("samples/initdatas/players.csv");
+  const players = getCSVObject(players_txt);
 
-  assertEquals(10, players.values.length);
+  assertEquals(10, players.rows.length);
   assertEquals(players.columns, [
     "winner_ioc",
     "name_first",

@@ -1,6 +1,6 @@
 .direnv
 .coverage
-samples/*.csv
-samples/*.db
-samples/tennis_atp
-samples_regenerated.cfwf
+samples/initdatas/*.csv
+samples/initdatas/*.db
+samples/initdatas/tennis_atp
+samples/samples_regenerated.cfwf

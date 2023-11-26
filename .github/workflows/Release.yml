@@ -31,8 +31,18 @@ jobs:
         run: "echo '${{ steps.release.outputs.version }}'"
 
       - name: Generate Changelog
-        run: cog changelog --at ${{ steps.release.outputs.version }}
-          -t full_hash > GITHUB_CHANGELOG.md
+        run:
+          - cog changelog --at ${{ steps.release.outputs.version }}
+           -t full_hash > GITHUB_CHANGELOG.md
+          - deno fmt
+
+      - name: Generate tool and lib version
+        run: sed -i src/versions.ts
+         "s/\".*\"/\"${{ steps.release.outputs.version }}\"/"
+
+      - name: Update vesion in the Readme documentation
+        run: sed -i README.md
+         sed "s/\@[0-9]\.[0-9]\.[0-9]/@${{ steps.release.outputs.version }}/"
 
       - name: Upload github release
         uses: softprops/action-gh-release@v1

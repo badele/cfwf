@@ -1,0 +1,62 @@
+---
+dataset:
+  metadatas:
+    generated_with: 'cfwf@0.0.1 - https://github.com/badele/cfwf'
+    orders:
+      - players
+      - australian_open
+      - roland_garros
+      - us_open
+      - wimbledon
+    sources:
+      - 'https://github.com/JeffSackmann/tennis_atp'
+  title: '     ATP Tour'
+tables:
+  australian_open:
+    metadatas:
+      aligns:
+        - right
+        - left
+        - center
+        - center
+      sources:
+        - 'https://fr.wikipedia.org/wiki/Open_d%27Australie'
+  players:
+    metadatas:
+      aligns:
+        - left
+        - right
+        - left
+        - center
+        - right
+        - right
+        - right
+      sources:
+        - 'https://github.com/JeffSackmann/tennis_atp'
+  roland_garros:
+    metadatas:
+      aligns:
+        - right
+        - left
+        - center
+        - center
+      sources:
+        - 'https://fr.wikipedia.org/wiki/Internationaux_de_France_de_tennis'
+  us_open:
+    metadatas:
+      aligns:
+        - right
+        - left
+        - center
+        - center
+      sources:
+        - 'https://fr.wikipedia.org/wiki/US_Open_de_tennis'
+  wimbledon:
+    metadatas:
+      aligns:
+        - right
+        - left
+        - center
+        - center
+      sources:
+        - 'https://fr.wikipedia.org/wiki/Tournoi_de_Wimbledon'
