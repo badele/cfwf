@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.2.0](https://github.com/badele/nix-projects/compare/v0.1.0..v0.2.0) - 2023-11-26
+#### Bug Fixes
+- release linter - ([edf7a1a](https://github.com/badele/nix-projects/commit/edf7a1a6ddb49ff2c61ee9cbdb2a18b9d495a5b8)) - [@badele](https://github.com/badele)
+- release yaml action file (act 3) - ([f8d4b79](https://github.com/badele/nix-projects/commit/f8d4b79a0b50351455899b78c9aa414ea626d792)) - [@badele](https://github.com/badele)
+- release yaml action file (act 2) - ([70d3e5f](https://github.com/badele/nix-projects/commit/70d3e5fce6120ad61b70aa2ceba9b1cba088e2de)) - [@badele](https://github.com/badele)
+- release yaml action file - ([d535119](https://github.com/badele/nix-projects/commit/d535119114538b29a7b42f3bfa4fba738a6154ce)) - [@badele](https://github.com/badele)
+#### Features
+- add command line and refacto the lib - ([041b15a](https://github.com/badele/nix-projects/commit/041b15acb63b00c3f5c591357c4f4aaaa3046b24)) - [@badele](https://github.com/badele)
+
+- - -
+
 ## [v0.1.0](https://github.com/badele/nix-projects/compare/1f01928591f654b573da7454d513374f0e99f433..v0.1.0) - 2023-11-16
 #### Bug Fixes
 - github CI badge - ([c90c1f1](https://github.com/badele/nix-projects/commit/c90c1f1384bf59385d9d9229b7dbc9d271c2d12e)) - [@badele](https://github.com/badele)
