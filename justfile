@@ -12,7 +12,6 @@ BROWSER := "chromium"
 
 # Execute test tasks
 @test: import-atp generate-samples
-  deno run -A samples/scripts/generate_samples.ts
   rm -rf ./.coverage
   deno test --doc --unstable --allow-all --parallel --coverage=./.coverage --trace-ops
 
@@ -37,10 +36,11 @@ coverage-browse browser="chromium": coverage
   {{ browser }} ./.coverage/html_cov/index.html
 
 @import-atp:
-  ./samples/scripts/import-atp.sh
+  ./samples/initdatas/import-atp.sh
 
 @generate-samples:
-  deno run -A samples/scripts/generate_samples.ts
+  deno run -A samples/samplescripts/generate_samples.ts 
+  samples/samplescripts/generate_samples.sh 
 
 # Run command interactively, view the result in realtime
 @view:

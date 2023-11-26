@@ -1,19 +1,34 @@
-import { Align, ParsedCSV } from "./types.ts";
-import * as modcsv from "https://deno.land/std@0.204.0/csv/mod.ts";
+import { CFWF } from "./cfwf.ts";
+import { Align, CFWFOptions } from "./types.ts";
 
-export function parseCSV(content: string): ParsedCSV {
-  let csv: ParsedCSV = {
-    columns: [],
-    values: [],
-  };
-  const lines = modcsv.parse(content);
+export const CHARMARKERS: CFWFOptions = {
+  padding: 3,
+  chartitlesep: "┈",
+  chardescsep: "┄",
+  chartabletop: "━",
+  chartablemiddle: "─",
+  chartablebottom: "━",
+  charyamlsep: "╌",
+};
 
-  csv = {
-    columns: lines[0],
-    values: lines.slice(1),
-  };
+export async function readTextFile(filename: string): Promise<string> {
+  const r = /https?\:\/\//;
 
-  return csv;
+  let content = "";
+  if (r.test(filename)) {
+    const resp = await fetch(filename);
+    content = await resp.text();
+  } else {
+    content = await Deno.readTextFile(filename);
+  }
+
+  return content;
+}
+
+export function getCFWFObject(content: string): CFWF {
+  const cfwf = new CFWF({});
+  cfwf.importCFWF(content);
+  return cfwf;
 }
 
 export function max(a: number, b: number): number {

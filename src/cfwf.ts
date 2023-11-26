@@ -1,45 +1,62 @@
-import { Align, readerOptions, writerOptions } from "./types.ts";
+import {
+  Align,
+  CFWFDataset,
+  CFWFOptions,
+  DatasetType,
+  ExportTable,
+  FormatCFWF,
+  TableType,
+} from "./types.ts";
 import { AvailableFonts } from "https://deno.land/x/deno_figlet@1.0.0/src/types.ts";
-import { Table } from "./table.ts";
+import { existsSync } from "https://deno.land/std@0.205.0/fs/exists.ts";
 import { align, getMaxWidth, max, searchMarker } from "./utils.ts";
 import { modfmt, modyaml, text } from "../deps.ts";
 import { version } from "./version.ts";
 
-const footertitle = "Generated with https://github.com/badele/cfwf";
+const footertitle = "cfwf@{VERSION} - https://github.com/badele/cfwf";
 
 export class CFWF {
-  // deno-lint-ignore no-explicit-any
-  infos: any;
-  tables: Record<string, Table>;
+  config: CFWFDataset;
+  writeroptions: CFWFOptions;
 
   // Title
   generatedtitle: string[];
   maxwidthtitle: number;
 
-  // deno-lint-ignore no-explicit-any
-  constructor(infos: any) {
-    if (!infos.font && infos.title) infos.font = "doom";
-    // if (infos.generatedtitle) delete infos.title;
-    // if (!infos.title && !infos.generatedtitle) infos.title = "VIDE";
-    if (!infos.comment) infos.comment = "";
-    if (!infos.removetitlelines) infos.removetitlelines = 2;
+  constructor(dsconfig: CFWFDataset) {
+    dsconfig.dataset = dsconfig.dataset || {};
+    dsconfig.tables = dsconfig.tables || {};
 
-    this.infos = infos;
-    this.tables = {};
-
-    // Title
+    this.config = dsconfig;
     this.generatedtitle = [];
     this.maxwidthtitle = 0;
+
+    this.writeroptions = {
+      padding: 3,
+      chartitlesep: "┈",
+      chardescsep: "┄",
+      chartabletop: "━",
+      chartablemiddle: "─",
+      chartablebottom: "━",
+      charyamlsep: "╌",
+    };
   }
 
   async _generateTitle(): Promise<void> {
-    const txttitle = await text(
-      this.infos.title,
-      this.infos.font as AvailableFonts,
-    );
+    let { dataset } = this.config;
+    const defaultDataset = { title: "", description: "" };
+    dataset = dataset || defaultDataset;
+
+    let { title, metadatas } = dataset;
+    metadatas = metadatas || {};
+
+    const font = metadatas.font as AvailableFonts ?? "doom";
+    const removetitlelines = metadatas.removetitlelines ?? 2;
+
+    const txttitle = await text(title ?? "", font);
     const ageneratedtitle = txttitle.split("\n").slice(
       0,
-      -this.infos.removetitlelines,
+      -removetitlelines,
     );
     const maxwidthtitle = getMaxWidth(ageneratedtitle);
 
@@ -47,65 +64,104 @@ export class CFWF {
     this.maxwidthtitle = maxwidthtitle;
   }
 
-  addArray(
-    tablename: string,
-    subtitle: string,
-    comment: string,
-    columns: string[],
-    // deno-lint-ignore no-explicit-any
-    rows: any[],
-    // deno-lint-ignore no-explicit-any
-    infos: any,
-  ): void {
-    this.tables[tablename] = new Table(
-      tablename,
-      subtitle,
-      comment,
-      columns,
-      rows,
-      infos,
-    );
+  setDatasetProperties(params: DatasetType): void {
+    const dataset = this.config.dataset || {};
+
+    if (params) Object.assign(dataset, params);
   }
 
-  fromCFWF(content: string, {
-    charseparator = "┈",
-    chartabletop = "━",
-    chartablemiddle = "─",
-    chartablebottom = "━",
-  }: readerOptions): void {
+  addTable(tablename: string, params: TableType): void {
+    const tables = this.config.tables || {};
+    const table = tables[tablename] || {};
+
+    const dataset = this.config.dataset || {};
+    dataset.metadatas = dataset.metadatas || {};
+    dataset.metadatas.orders = dataset.metadatas.orders || [];
+    dataset.metadatas.orders.push(tablename);
+
+    if (params) Object.assign(table, params);
+
+    tables[tablename] = table;
+  }
+
+  getDatas(): Record<string, ExportTable> {
+    const tables = this.config?.tables || {};
+
+    const orders = this.config?.dataset?.metadatas?.orders || [];
+    const result: Record<string, ExportTable> = {};
+
+    for (const tablename of orders) {
+      const table = tables[tablename] as TableType;
+      if (table) {
+        result[tablename] = {
+          columns: table.columns || [],
+          rows: table.rows || [],
+        };
+      }
+    }
+
+    return result;
+  }
+
+  async saveCFWF(
+    filename: string,
+    separate: boolean,
+  ): Promise<void> {
+    const { content, metadatas } = await this.outputCFWF(separate);
+
+    const metaname = filename.replace(".cfwf", ".yaml");
+    if (!separate) {
+      await Deno.writeTextFile(
+        filename,
+        content,
+      );
+      if (existsSync(metaname) === true) {
+        await Deno.remove(metaname);
+      }
+    } else {
+      Deno.writeTextFileSync(filename, content);
+      const metaname = filename.replace(".cfwf", ".yaml");
+      Deno.writeTextFileSync(metaname, metadatas);
+    }
+  }
+
+  importCFWF(content: string): void {
+    const chartitlesep = this.writeroptions.chartitlesep ?? "┈";
+    const chardescsep = this.writeroptions.chardescsep ?? "┄";
+    const chartabletop = this.writeroptions.chartabletop ?? "━";
+    const chartablemiddle = this.writeroptions.chartablemiddle ?? "─";
+    const chartablebottom = this.writeroptions.chartablebottom ?? "━";
+    const charyamlsep = this.writeroptions.charyamlsep ?? "╌";
+
     let lastmarkerpos = 0;
     let tabletopmarkerpos = 0;
     let tablebottommarkerpos = 0;
     let tabletablenamepos = 0;
     let tablesubtitlepos = 0;
 
-    // deno-lint-ignore no-explicit-any
-    let fromYAML: any = {};
-    const tables: Table[] = [];
-
     const lines = content.split("\n");
 
-    // Search title and comment
-    const titlemarkerpos = searchMarker(lines, charseparator);
-    const commentmarkerpos = searchMarker(
-      lines,
-      charseparator,
-      titlemarkerpos + 1,
-    );
-    lastmarkerpos = commentmarkerpos + 1;
+    // Search title and description separators
+    const titlemarkerpos = searchMarker(lines, chartitlesep);
+    const descmarkerpos = searchMarker(lines, chardescsep);
+    const yamlmarkerpos = searchMarker(lines, charyamlsep);
+    lastmarkerpos = max(titlemarkerpos, descmarkerpos);
 
-    let endfile = false;
-    while (!endfile) {
-      const table: Table = {
-        tablename: "",
-        subtitle: "",
-        comment: "",
-        columns: [],
-        // aligns: [],
-        rows: [],
-        metas: {},
-      };
+    this.config = modyaml.parse(
+      lines.slice(yamlmarkerpos + 1, -1).join("\n"),
+    ) as CFWFDataset;
 
+    const dataset = this.config.dataset || {};
+
+    if (descmarkerpos > -1) {
+      dataset.description = lines.slice(
+        titlemarkerpos + 1,
+        descmarkerpos,
+      ).join("\n");
+    }
+
+    let hastable = searchMarker(lines, chartabletop, lastmarkerpos);
+    while (hastable > -1) {
       tabletopmarkerpos = searchMarker(lines, chartabletop, lastmarkerpos);
       if (tabletopmarkerpos > -1) {
         // search table
@@ -117,10 +173,16 @@ export class CFWF {
 
         tabletablenamepos = tabletopmarkerpos - 3;
         tablesubtitlepos = tabletopmarkerpos - 2;
+        const tablename = lines[tabletablenamepos];
 
-        table.tablename = lines[tabletablenamepos];
+        this.config.tables = this.config.tables || {};
+        const table = this.config.tables[tablename];
+
         table.subtitle = lines[tablesubtitlepos];
-        table.comment = lines.slice(lastmarkerpos + 1, tabletablenamepos - 1)
+        table.description = lines.slice(
+          lastmarkerpos + 1,
+          tabletablenamepos - 1,
+        )
           .join("\n");
 
         const headerline = lines[tabletopmarkerpos + 1];
@@ -166,98 +228,110 @@ export class CFWF {
           rows.push(cols);
         }
         table.rows = rows;
-        tables.push(table);
 
         lastmarkerpos = tablebottommarkerpos + 1;
-      } else {
-        endfile = true;
-        fromYAML = modyaml.parse(lines.slice(lastmarkerpos, -1).join("\n"));
-        this.infos = fromYAML._infos_;
 
-        this.generatedtitle = lines.slice(0, titlemarkerpos);
-        this.infos.comment = lines.slice(
-          titlemarkerpos + 1,
-          commentmarkerpos,
-        ).join("\n");
+        hastable = searchMarker(lines, chartabletop, lastmarkerpos);
       }
     }
 
-    this._generateTitle();
-    for (let idx = 0; idx < tables.length; idx++) {
-      const table = tables[idx];
-
-      this.addArray(
-        table.tablename,
-        table.subtitle,
-        table.comment,
-        table.columns,
-        // global[table.tablename].aligns,
-        table.rows,
-        table.metas = fromYAML[table.tablename],
-      );
-    }
+    // console.log("GETDATAS", this.getDatas());
   }
 
-  async toCFWF({
-    padding = 3,
-    charseparator = "┈",
-    chartabletop = "━",
-    chartablemiddle = "─",
-    chartablebottom = "━",
-  }: writerOptions = {}): Promise<string> {
-    // deno-lint-ignore no-explicit-any
-    const infos: any = {};
+  async outputCFWF(separate: boolean): Promise<FormatCFWF> {
+    const padding = this.writeroptions.padding ?? 3;
+    const chartitlesep = this.writeroptions.chartitlesep ?? "┈";
+    const chardescsep = this.writeroptions.chardescsep ?? "┄";
+    const chartabletop = this.writeroptions.chartabletop ?? "━";
+    const chartablemiddle = this.writeroptions.chartablemiddle ?? "─";
+    const chartablebottom = this.writeroptions.chartablebottom ?? "━";
+    const charyamlsep = this.writeroptions.charyamlsep ?? "╌";
 
     const lines: string[] = [];
-    let maxwidthcomment = 0;
+    let maxwidthdescription = 0;
 
-    // Compute max title width size
-    if (this.infos.title) {
+    const config = structuredClone(this.config);
+
+    let { dataset, tables } = config as CFWFDataset;
+    const defaultDataset = {
+      title: "",
+      description: "",
+      generatedtitle: "",
+      metadatas: {
+        orders: [],
+      },
+    };
+
+    dataset = dataset || defaultDataset;
+    tables = tables || {};
+    const metadatas = dataset.metadatas || {};
+
+    let { title, generatedtitle, description } = dataset;
+
+    // Compute max dataset title width size
+    if (title && title.length > 0) {
       await this._generateTitle();
-    } else {
-      if (this.infos.generatedtitle) {
-        this.generatedtitle = this.infos.generatedtitle.split("\n");
-        this.maxwidthtitle = getMaxWidth(this.generatedtitle);
-      }
+    }
+    if (generatedtitle) {
+      this.generatedtitle = generatedtitle.split("\n");
+      this.maxwidthtitle = getMaxWidth(this.generatedtitle);
     }
 
-    // Compute max comment width size
-    if (this.infos.comment) {
-      const acomment = this.infos.comment.split("\n");
-      maxwidthcomment = getMaxWidth(acomment);
+    // Compute max dataset description width size
+    if (description && description.length > 0) {
+      description = description.replaceAll("\\n", "\n");
+      const adescription = description.split("\n");
+      maxwidthdescription = getMaxWidth(adescription);
     }
+    // Compute title or description max size
+    const maxwidthline = max(this.maxwidthtitle, maxwidthdescription);
 
-    // Compute title or comment max size
-    const maxwidthline = max(this.maxwidthtitle, maxwidthcomment);
     if (this.generatedtitle && this.generatedtitle.length > 0) {
       lines.push(this.generatedtitle.join("\n"));
-      lines.push(align("center", charseparator.repeat(3), maxwidthline));
+      lines.push(
+        align(
+          "center",
+          chartitlesep.repeat(3),
+          maxwidthline,
+        ),
+      );
     }
 
-    if (this.infos.comment && this.infos.comment.length > 0) {
-      lines.push(this.infos.comment);
-      lines.push(align("center", charseparator.repeat(3), maxwidthline));
+    if (description && description.length > 0) {
+      lines.push(description);
+      lines.push(align("center", chardescsep.repeat(3), maxwidthline));
     }
 
     // Generate tables
-    let table: Table;
-    const tablenames = Object.keys(this.tables);
-    tablenames.forEach((tablename) => {
-      table = this.tables[tablename];
+    const tablenames = metadatas.orders || [];
+    for (const tablename of tablenames) {
+      const table = tables[tablename];
+
+      const defaultTable = {
+        title: "",
+        description: "",
+        rows: [],
+        columns: [],
+        metadatas: {},
+      };
+
+      let { metadatas: tmetadatas } = table || defaultTable;
+      tmetadatas = tmetadatas || {};
 
       //search the needed number of float size for each columns
       const colnbfloat: Record<number, number> = {};
-      for (let ridx = 0; ridx < table.rows.length; ridx++) {
-        const row = table.rows[ridx];
-        for (let cidx = 0; cidx < row.length; cidx++) {
-          const col = row[cidx];
-          if (typeof col === "number") {
-            const colvalue = col.toString();
-            const dotpos = colvalue.indexOf(".");
-            colnbfloat[cidx] = max(
-              colnbfloat[cidx],
-              (dotpos != -1) ? colvalue.length - dotpos - 1 : 0,
-            );
+      if (table.rows) {
+        for (const row of table.rows) {
+          for (let cidx = 0; cidx < row.length; cidx++) {
+            const col = row[cidx];
+            if (typeof col === "number") {
+              const colvalue = col.toString();
+              const dotpos = colvalue.indexOf(".");
+              colnbfloat[cidx] = max(
+                colnbfloat[cidx],
+                (dotpos != -1) ? colvalue.length - dotpos - 1 : 0,
+              );
+            }
           }
         }
       }
@@ -265,53 +339,61 @@ export class CFWF {
       // Compute number floats needed for each columns
       // deno-lint-ignore no-explicit-any
       const srows: any[] = [];
-      for (let ridx = 0; ridx < table.rows.length; ridx++) {
-        const row = table.rows[ridx];
-        // deno-lint-ignore no-explicit-any
-        const cols: any[] = [];
-        for (let cidx = 0; cidx < row.length; cidx++) {
-          // const colname = table.columns[cidx];
-          const col = row[cidx];
-          if (typeof col === "number" && colnbfloat[cidx] > 0) {
-            cols.push(modfmt.sprintf("%.*f", colnbfloat[cidx], col));
-          } else {
-            cols.push(col.toString());
+
+      if (table.rows) {
+        for (const row of table.rows) {
+          // deno-lint-ignore no-explicit-any
+          const cols: any[] = [];
+          for (let cidx = 0; cidx < row.length; cidx++) {
+            const col = row[cidx];
+
+            if (typeof col === "number" && colnbfloat[cidx] > 0) {
+              cols.push(modfmt.sprintf("%.*f", colnbfloat[cidx], col));
+            } else {
+              cols.push(col.toString());
+            }
           }
+          srows.push(cols);
         }
-        srows.push(cols);
       }
 
       // Init columns size with the header size
-      const columnssize: number[] = [];
-      for (let idx = 0; idx < table.columns.length; idx++) {
-        columnssize.push(table.columns[idx].length);
-      }
+      let { columns } = table;
+      columns = columns || [];
+
+      const columnssize: number[] = columns.map((col) => col.length);
 
       // compute the content columns size
-      for (let rowidx = 0; rowidx < srows.length; rowidx++) {
-        const itemrow = srows[rowidx];
+      for (const itemrow of srows) {
         for (let colidx = 0; colidx < itemrow.length; colidx++) {
           const content = itemrow[colidx];
           columnssize[colidx] = max(content.length, columnssize[colidx]);
         }
       }
 
-      // compute total line size
-      let headerlinesize = 0;
-      for (let idx = 0; idx < table.columns.length; idx++) {
-        if (idx > 0) headerlinesize += padding;
-        headerlinesize += columnssize[idx];
+      let { aligns } = tmetadatas || [];
+
+      if (!aligns) {
+        aligns = Array(columns.length).fill("left");
       }
+      tmetadatas.aligns = aligns;
+
+      // compute total line size
+      const headerlinesize = columnssize.reduce((acc, size) => acc + size, 0) +
+        (padding * (columns.length - 1));
 
       // add tablename and subtitle
-      if (table.comment) {
+      if (table.description) {
         lines.push("");
-        lines.push(table.comment);
+        lines.push(table.description);
+      }
+
+      lines.push("");
+      if (tablename) {
+        lines.push(tablename);
       }
 
       if (table.subtitle) {
-        lines.push("");
-        lines.push(table.tablename);
         lines.push(table.subtitle);
         lines.push("");
       }
@@ -323,8 +405,8 @@ export class CFWF {
       const headers: string[] = [];
       const middlelineheader: string[] = [];
 
-      for (let idx = 0; idx < table.columns.length; idx++) {
-        const cname = table.columns[idx];
+      for (let idx = 0; idx < columns.length; idx++) {
+        const cname = columns[idx];
         const csize = columnssize[idx];
 
         if (idx > 0) {
@@ -332,7 +414,11 @@ export class CFWF {
           middlelineheader.push(" ".repeat(padding));
         }
 
-        headers.push(align(table.metas.aligns[idx] as Align, cname, csize));
+        if (aligns) {
+          headers.push(
+            align(aligns[idx] as Align, cname, csize),
+          );
+        }
         middlelineheader.push(chartablemiddle.repeat(csize));
       }
 
@@ -350,35 +436,47 @@ export class CFWF {
 
           if (colidx > 0) line.push(" ".repeat(padding));
           // line.push(coldata[colidx].padEnd(csize));
-          line.push(
-            align(table.metas.aligns[colidx] as Align, coldata[colidx], csize),
-          );
+
+          if (aligns) {
+            line.push(
+              align(
+                aligns[colidx] as Align,
+                coldata[colidx],
+                csize,
+              ),
+            );
+          }
         }
         lines.push(line.join(""));
-
-        infos[tablename] = {};
-        infos[tablename]["aligns"] = table.metas.aligns;
-
-        // Add another metas to export
-        Object.keys(table.metas).forEach((key) =>
-          infos[tablename][key] = table.metas[key]
-        );
       }
 
       // Add bottom line header
       if (chartablebottom) lines.push(chartablebottom.repeat(headerlinesize));
-    });
-
-    // Add another metas to export
-    infos._infos_ = structuredClone(this.infos);
-    infos._infos_.removetitlelines = this.infos.removetitlelines;
-    infos._infos_.generated_with = `${footertitle}@${version}`;
-    delete infos._infos_.comment;
+    }
 
     lines.push("");
-    const smeta = modyaml.stringify(infos, { flowLevel: 2, sortKeys: true });
-    lines.push(smeta);
 
-    return lines.join("\n");
+    delete dataset.description;
+
+    metadatas.generated_with = footertitle.replaceAll("{VERSION}", version);
+
+    for (const table of Object.values(tables)) {
+      delete table.columns;
+      delete table.description;
+      delete table.rows;
+      delete table.subtitle;
+    }
+
+    dataset.metadatas = metadatas;
+
+    const smeta = modyaml.stringify(config, { sortKeys: true });
+
+    if (!separate) {
+      lines.push(charyamlsep.repeat(3));
+      lines.push(smeta);
+      return { content: lines.join("\n"), metadatas: "" };
+    } else {
+      return { content: lines.join("\n"), metadatas: `---\n${smeta}` };
+    }
   }
 }

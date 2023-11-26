@@ -5,9 +5,8 @@
 [![Build status](https://github.com/badele/cfwf/workflows/CI/badge.svg)](https://github.com/badele/cfwf/actions/workflows/CI.yml)
 [![Code coverage](https://codecov.io/gh/badele/cfwf/branch/main/graph/badge.svg)](https://codecov.io/gh/badele/cfwf)
 
-**cfwf** is a library designed to facilitate the conversion of tables or
-dictionaries into a human-readable format compatible with a simple text file
-reader.
+**cfwf** is a tool and library designed to facilitate the conversion of tables
+into a human-readable format compatible with a simple text file reader.
 
 ## Project Motivation
 
@@ -25,63 +24,83 @@ tabular data.
 - **Commentary and Metadata Inclusion:** Posibility to add comments and metadata
   to the entire CFWF file, also for each table
 
-## Example
+## Installation
 
-### Code
-
-```typescript
-import { CFWF } from "./mod.ts";
-import { parseCSV } from "./src/utils.ts";
-
-const metas: any = {
-  title: "     ATP Tour",
-  comment: "Here is a list of the best tennis players in the ATP rankings\n\
-from 2012 to 2022, as well as the list of winners of the\n\
-4 major Grand Slam tournaments.",
-  sources: [
-    "https://github.com/JeffSackmann/tennis_atp",
-  ],
-};
-
-const samples = new CFWF(metas);
-
-const players_txt = Deno.readTextFileSync("samples/players.csv");
-const players = parseCSV(players_txt);
-
-const australian_txt = Deno.readTextFileSync("samples/australian_open.csv");
-const australian = parseCSV(australian_txt);
-
-samples.addArray(
-  "players",
-  "The best players (number of winning matches) beetween 2012-2022 ",
-  "",
-  players.columns,
-  players.values,
-  {
-    aligns: ["left", "right", "left", "center", "right", "right", "right"],
-    sources: "https://github.com/JeffSackmann/tennis_atp",
-  },
-);
-
-samples.addArray(
-  "australian_open",
-  "Australian Open winners beetween 2012-2022",
-"The Australian Open is a tennis tournament held annually at Melbourne Park\n\
-in Melbourne, Victoria, Australia. The tournament is the first of the \n\
-four Grand Slam tennis events held each year.",
-  ["year", "tourney name", "birth nat", "winner"],
-  australian.values,
-  {
-    aligns: ["right", "left", "center", "center"],
-    sources: [
-      "https://fr.wikipedia.org/wiki/Open_d%27Australie",
-      "https://github.com/JeffSackmann/tennis_atp",
-    ],
-  },
-);
+```shell
+curl -fsSL https://deno.land/x/install/install.sh | sh
+deno install -A -fn cfwf https://deno.land/x/cfwf@0.0.1/mod.ts
+cfwf convert -i https://media.githubusercontent.com/media/datablist/sample-csv-files/main/files/people/people-100.csv -o /tmp/people.cfwf
+less -S /tmp/people.cfwf
 ```
 
-### Result
+## Usage
+
+### Simple file conversion
+
+```text
+Usage:   cfwf convert --input <intput> --output <output>
+Version: 0.0.1
+
+Description:
+
+  Convert files
+
+Options:
+
+  -h, --help                    - Show this help.
+  -i, --input      <intput>     - Input filenme                 (required)
+  -o, --output     <output>     - Output filenme                (required)
+  -t, --tablename  <tablename>  - Define table name
+  -s, --subtitle   <subtitle>   - Define table subtitle
+  -l, --columns    <column>     - Columns name                  (Default: [])
+  -a, --aligns     <column>     - Aligns for each columns
+  -S, --separate                - Separate content & metadatas
+```
+
+```shell
+cfwf convert -i https://media.githubusercontent.com/media/datablist/sample-csv-files/main/files/people/people-100.csv -o /tmp/people.cfwf
+less -S /tmp/people.cfwf
+```
+
+### Multiples files conversion
+
+```shell
+cfwf dataset init -c /tmp/config.json
+
+cfwf dataset set \
+-c /tmp/config.json \
+-t "     CSV Samples" \
+-d "$(cat << EOD
+This is an example of how to convert a CSV file into a CFWF file.
+The data comes from the https://github.com/datablist/sample-csv-files project.
+Thanks to the author for providing the example data.
+EOD
+)
+" \
+-m '{ "sources": [ "https://github.com/datablist/sample-csv-files" ]}'
+
+cfwf table add \
+-c /tmp/config.json \
+-f https://media.githubusercontent.com/media/datablist/sample-csv-files/main/files/people/people-100.csv \
+-t peoples \
+-s "The peoples list" \
+-l "Index,User Id,First Name,Last Name,Sex,Email,Phone,Date of birth,Job Title" \
+-a "right,right,right,left,center,left,left,center,left" \
+-m '{ "sources": [ "https://github.com/datablist/sample-csv-files/tree/main/files/people" ]}'
+
+cfwf table add \
+-c /tmp/config.json \
+-f https://media.githubusercontent.com/media/datablist/sample-csv-files/main/files/customers/customers-100.csv \
+-t customers \
+-s "The customers list" \
+-l "Index,Customer Id,First Name,Last Name,Company,City,Country,Phone 1,Phone 2,Email,Subscription Date,Website" \
+-a "right,right,right,left,right,left,right,right,left,left,center,left" \
+-m '{ "sources": [ "https://github.com/datablist/sample-csv-files/tree/main/files/customers" ]}'
+
+cfwf export -c /tmp/config.json -o | less -S
+```
+
+#### Result
 
 ```text
             ___   _____ ______    _____                     
@@ -139,7 +158,13 @@ year   tourney name      birth nat       winner
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+## Samples
+
+You can see more examples in the `samples/samplesscripts/` folder
+
 ## Sample dataset
 
-The samples dataset provided by the
-[JeffSackmann ATP tennis project](https://github.com/JeffSackmann/tennis_atp)
+The samples dataset provided by :
+
+- [JeffSackmann ATP tennis project](https://github.com/JeffSackmann/tennis_atp)
+- [datablist sample csv files](https://github.com/datablist/sample-csv-files)
