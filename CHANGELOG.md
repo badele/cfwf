@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.2.2](https://github.com/badele/nix-projects/compare/v0.2.1..v0.2.2) - 2023-11-26
+#### Bug Fixes
+- remove static version - ([41f24b4](https://github.com/badele/nix-projects/commit/41f24b4ece7f58ac090a5107650d9971d9bb7742)) - [@badele](https://github.com/badele)
+
+- - -
+
 ## [v0.2.1](https://github.com/badele/nix-projects/compare/v0.2.0..v0.2.1) - 2023-11-26
 #### Bug Fixes
 - add release.sh script - ([d9561f3](https://github.com/badele/nix-projects/commit/d9561f3bee5b6770d6efc35b408b72f540e4e468)) - [@badele](https://github.com/badele)
