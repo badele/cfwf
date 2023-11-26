@@ -31,7 +31,7 @@ jobs:
           deno-version: v1.36.0
 
       - name: Format
-        run: deno fmt --check
+        run: deno fmt --check --ignore=CHANGELOG.md
 
       - name: Lint
         run: just lint

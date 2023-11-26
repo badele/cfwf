@@ -24,7 +24,7 @@ ci: lint fmt coverage
 
 # Format code
 @fmt:
-  deno fmt
+  deno fmt --ignore=CHANGELOG.md
 
 # Execute coverage
 @coverage: test
