@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.4.0](https://github.com/badele/nix-projects/compare/v0.3.0..v0.4.0) - 2023-11-26
+#### Bug Fixes
+- add-and-commit release.yaml section - ([56b7ebf](https://github.com/badele/nix-projects/commit/56b7ebfc21b114456de9286b892be67a6f00bda4)) - [@badele](https://github.com/badele)
+#### Features
+- push files during pre-release step - ([538fdf8](https://github.com/badele/nix-projects/commit/538fdf8e5a1e01e3c1b0b69cf25e0b61b3371f7a)) - [@badele](https://github.com/badele)
+
+- - -
+
 ## [v0.3.0](https://github.com/badele/nix-projects/compare/v0.2.2..v0.3.0) - 2023-11-26
 #### Features
 - push version.ts and README.md in release - ([11904c5](https://github.com/badele/nix-projects/commit/11904c5ede01466669c4f0ebfc521b8722716bc6)) - [@badele](https://github.com/badele)
