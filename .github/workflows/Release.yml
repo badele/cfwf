@@ -24,20 +24,10 @@ jobs:
           release: true
           git-user: github-actions
           git-user-email: github-actions@github.com
-      - name: Print version
-        run: 'echo "${{ steps.release.outputs.version }}"'
-      - name: Generate Changelog
-        run: >
-          cog changelog --at "${{ steps.release.outputs.version }}" -t full_hash
-          > GITHUB_CHANGELOG.md
-      - name: Generate tool and lib version
-        run: >
-          sed -i src/versions.ts "s/\".*\"/\"${{ steps.release.outputs.version
-          }}\"/"
-      - name: Update vesion in the Readme documentation
-        run: >-
-          sed -i README.md \ sed "s/\@[0-9]\.[0-9]\.[0-9]/@${{
-          steps.release.outputs.version }}/"
+
+      - name: Release new version
+        run: ./.github/workflows/release.sh {{ steps.release.outputs.version }}
+
       - name: Upload github release
         uses: softprops/action-gh-release@v1
         with:
