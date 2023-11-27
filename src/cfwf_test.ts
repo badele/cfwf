@@ -224,14 +224,14 @@ test("Title & comment", async () => {
   assertEquals(`${footer}`, dsinfos.dataset.metadatas.generated_with);
 });
 
-test("Columns and headers columns size from sample.cfwf", async () => {
+test("Columns and headers columns size from generated_by_sh.cfwf", async () => {
   const options: CFWFOptions = {
     chartabletop: "━",
     chartablemiddle: "─",
     chartablebottom: "━",
   };
 
-  const content = await readTextCFWFFile("samples/sample.cfwf");
+  const content = await readTextCFWFFile("samples/generated_by_sh.cfwf");
   const lines = content.split("\n");
 
   const titlemarkerpos = searchMarker(lines, chartitlesep || "");
@@ -487,7 +487,7 @@ test("Number & array", async () => {
 // });
 
 test("Feature (no key element can be found in the doc with marker", async () => {
-  const content = await readTextCFWFFile("samples/sample.cfwf");
+  const content = await readTextCFWFFile("samples/generated_by_sh.cfwf");
   const lines = content.split("\n");
 
   let idx = 0;
@@ -510,7 +510,7 @@ test("Feature (no key element can be found in the doc with marker", async () => 
 
 test("Reader & regenerate", async () => {
   const samples = new CFWF({});
-  const content = await readTextCFWFFile("samples/sample.cfwf");
+  const content = await readTextCFWFFile("samples/generated_by_sh.cfwf");
 
   samples.importCFWF(content);
   await samples.saveCFWF("samples/samples_regenerated.cfwf", false);
