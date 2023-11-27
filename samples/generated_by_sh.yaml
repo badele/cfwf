@@ -1,7 +1,7 @@
 ---
 dataset:
   metadatas:
-    generated_with: 'cfwf@0.0.1 - https://github.com/badele/cfwf'
+    generated_with: 'cfwf@0.4.0 - https://github.com/badele/cfwf'
     orders:
       - players
       - australian_open
