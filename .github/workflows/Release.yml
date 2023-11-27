@@ -25,7 +25,7 @@ jobs:
           git-user: github-actions
           git-user-email: github-actions@github.com
       - name: Release new version
-        run: './.github/workflows/release.sh {{ steps.release.outputs.version }}'
+        run: './.github/workflows/release.sh ${{ steps.release.outputs.version }}'
       - uses: EndBug/add-and-commit@v9
         with:
           default_author: github_actions

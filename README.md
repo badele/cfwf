@@ -28,7 +28,7 @@ tabular data.
 
 ```shell
 curl -fsSL https://deno.land/x/install/install.sh | sh
-deno install -A -fn cfwf https://deno.land/x/cfwf@{{/mod.ts
+deno install -A -fn cfwf https://deno.land/x/cfwf@0.1.0/mod.ts
 cfwf convert -i https://media.githubusercontent.com/media/datablist/sample-csv-files/main/files/people/people-100.csv -o /tmp/people.cfwf
 less -S /tmp/people.cfwf
 ```
@@ -39,7 +39,7 @@ less -S /tmp/people.cfwf
 
 ```text
 Usage:   cfwf convert --input <intput> --output <output>
-Version: {{
+Version: 0.1.0
 
 Description:
 
