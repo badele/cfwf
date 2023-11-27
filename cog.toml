@@ -1,4 +1,4 @@
-tag_prefix = "v"
+# tag_prefix = "v"
 ignore_merge_commits = true
 branch_whitelist = ["main"]
 pre_bump_hooks = [
@@ -6,7 +6,7 @@ pre_bump_hooks = [
 ]
 post_bump_hooks = [
   "git push",
-  "git push origin v{{version}}",
+  "git push origin {{version}}",
 ]
 
 [commit_types]
@@ -19,7 +19,7 @@ path = "CHANGELOG.md"
 template = "remote"
 remote = "github.com"
 owner = "badele"
-repository = "nix-projects"
+repository = "cfwf"
 authors = [
     { username = "badele", signature = "Bruno Adelé" }
 ]
