@@ -2,9 +2,9 @@
 import { CFWF } from "./cfwf.ts";
 import { assertEquals } from "../test_deps.ts";
 import { modyaml } from "../deps.ts";
-import { CHARMARKERS, searchMarker } from "./utils.ts";
+import { searchMarker } from "./utils.ts";
 import { version } from "./version.ts";
-import { CFWFOptions } from "./types.ts";
+import { CFWFOPTIONS, CFWFOptions } from "./types.ts";
 import { readTextCFWFFile } from "./converter.ts";
 
 const { test } = Deno;
@@ -13,18 +13,9 @@ const title = "this is a title";
 const comment = "this is a comment";
 const footer = `cfwf@${version} - https://github.com/badele/cfwf`;
 
-// const sep: readerOptions = {
-//   chartitlesep: "┈",
-//   chardescsep: "┄",
-//   chartabletop: "━",
-//   chartablemiddle: "─",
-//   chartablebottom: "━",
-//   charyamlsep: "╌",
-// };
-
-const chartitlesep = CHARMARKERS.chartitlesep || "";
-const chardescsep = CHARMARKERS.chardescsep || "";
-const charyamlsep = CHARMARKERS.charyamlsep || "";
+const chartitlesep = CFWFOPTIONS.chartitlesep || "";
+const chardescsep = CFWFOPTIONS.chardescsep || "";
+const charyamlsep = CFWFOPTIONS.charyamlsep || "";
 
 const datas_array = [
   [1, 1, 1, 1, 1],

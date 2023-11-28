@@ -1,6 +1,6 @@
 export type Align = "left" | "center" | "right";
 
-export type FormatCFWF = {
+export type CFWFRaw = {
   content: string;
   metadatas: string;
 };
@@ -10,16 +10,6 @@ export type NamedArray = {
   // deno-lint-ignore no-explicit-any
   rows: any[];
 };
-
-// export type readerOptions = {
-//   chartitlesep?: string;
-//   chardescsep?: string;
-//   chartabletop?: string;
-//   chartablemiddle?: string;
-//   chartablebottom?: string;
-//   charyamlsep?: string;
-//   maxmarkerlines?: number;
-// };
 
 export type CFWFOptions = {
   padding?: number;
@@ -34,6 +24,16 @@ export type CFWFOptions = {
   metas?: any;
   font?: string;
   separate?: boolean;
+};
+
+export const CFWFOPTIONS: CFWFOptions = {
+  padding: 3,
+  chartitlesep: "┈",
+  chardescsep: "┄",
+  chartabletop: "━",
+  chartablemiddle: "─",
+  chartablebottom: "━",
+  charyamlsep: "╌",
 };
 
 export type DatasetType = {
@@ -68,12 +68,6 @@ export type TableType = {
     // deno-lint-ignore no-explicit-any
     [key: string]: any;
   };
-};
-
-export type ExportTable = {
-  columns: string[];
-  // deno-lint-ignore no-explicit-any
-  rows: any[];
 };
 
 export type CFWFDataset = {
