@@ -1,10 +1,10 @@
 import {
   Align,
   CFWFDataset,
-  CFWFOptions,
+  CFWFOPTIONS,
+  CFWFRaw,
   DatasetType,
-  ExportTable,
-  FormatCFWF,
+  NamedArray,
   TableType,
 } from "./types.ts";
 import { AvailableFonts } from "https://deno.land/x/deno_figlet@1.0.0/src/types.ts";
@@ -14,10 +14,16 @@ import { modfmt, modyaml, text } from "../deps.ts";
 import { version } from "./version.ts";
 
 const footertitle = "cfwf@{VERSION} - https://github.com/badele/cfwf";
+const padding = CFWFOPTIONS.padding ?? 3;
+const chartitlesep = CFWFOPTIONS.chartitlesep ?? "┈";
+const chardescsep = CFWFOPTIONS.chardescsep ?? "┄";
+const chartabletop = CFWFOPTIONS.chartabletop ?? "━";
+const chartablemiddle = CFWFOPTIONS.chartablemiddle ?? "─";
+const chartablebottom = CFWFOPTIONS.chartablebottom ?? "━";
+const charyamlsep = CFWFOPTIONS.charyamlsep ?? "╌";
 
 export class CFWF {
   config: CFWFDataset;
-  writeroptions: CFWFOptions;
 
   // Title
   generatedtitle: string[];
@@ -30,16 +36,6 @@ export class CFWF {
     this.config = dsconfig;
     this.generatedtitle = [];
     this.maxwidthtitle = 0;
-
-    this.writeroptions = {
-      padding: 3,
-      chartitlesep: "┈",
-      chardescsep: "┄",
-      chartabletop: "━",
-      chartablemiddle: "─",
-      chartablebottom: "━",
-      charyamlsep: "╌",
-    };
   }
 
   async _generateTitle(): Promise<void> {
@@ -84,11 +80,11 @@ export class CFWF {
     tables[tablename] = table;
   }
 
-  getDatas(): Record<string, ExportTable> {
+  getDatas(): Record<string, NamedArray> {
     const tables = this.config?.tables || {};
 
     const orders = this.config?.dataset?.metadatas?.orders || [];
-    const result: Record<string, ExportTable> = {};
+    const result: Record<string, NamedArray> = {};
 
     for (const tablename of orders) {
       const table = tables[tablename] as TableType;
@@ -126,13 +122,6 @@ export class CFWF {
   }
 
   importCFWF(content: string): void {
-    const chartitlesep = this.writeroptions.chartitlesep ?? "┈";
-    const chardescsep = this.writeroptions.chardescsep ?? "┄";
-    const chartabletop = this.writeroptions.chartabletop ?? "━";
-    const chartablemiddle = this.writeroptions.chartablemiddle ?? "─";
-    const chartablebottom = this.writeroptions.chartablebottom ?? "━";
-    const charyamlsep = this.writeroptions.charyamlsep ?? "╌";
-
     let lastmarkerpos = 0;
     let tabletopmarkerpos = 0;
     let tablebottommarkerpos = 0;
@@ -238,15 +227,7 @@ export class CFWF {
     // console.log("GETDATAS", this.getDatas());
   }
 
-  async outputCFWF(separate: boolean): Promise<FormatCFWF> {
-    const padding = this.writeroptions.padding ?? 3;
-    const chartitlesep = this.writeroptions.chartitlesep ?? "┈";
-    const chardescsep = this.writeroptions.chardescsep ?? "┄";
-    const chartabletop = this.writeroptions.chartabletop ?? "━";
-    const chartablemiddle = this.writeroptions.chartablemiddle ?? "─";
-    const chartablebottom = this.writeroptions.chartablebottom ?? "━";
-    const charyamlsep = this.writeroptions.charyamlsep ?? "╌";
-
+  async outputCFWF(separate: boolean): Promise<CFWFRaw> {
     const lines: string[] = [];
     let maxwidthdescription = 0;
 

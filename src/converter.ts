@@ -1,6 +1,6 @@
-import { NamedArray } from "./types.ts";
+import { CFWFOPTIONS, NamedArray } from "./types.ts";
 import * as modcsv from "https://deno.land/std@0.204.0/csv/mod.ts";
-import { CHARMARKERS, readTextFile } from "./utils.ts";
+import { readTextFile } from "./utils.ts";
 import { existsSync } from "https://deno.land/std@0.205.0/fs/exists.ts";
 import { CFWF } from "./cfwf.ts";
 
@@ -40,7 +40,7 @@ export async function readCFWFFile(filename: string): Promise<CFWF> {
 }
 
 export async function readTextCFWFFile(filename: string): Promise<string> {
-  const charyamlsep = CHARMARKERS.charyamlsep ?? "╌";
+  const charyamlsep = CFWFOPTIONS.charyamlsep ?? "╌";
 
   const metaname = filename.replace(".cfwf", ".yaml");
   if (existsSync(metaname) === true) {

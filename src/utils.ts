@@ -1,15 +1,5 @@
 import { CFWF } from "./cfwf.ts";
-import { Align, CFWFOptions } from "./types.ts";
-
-export const CHARMARKERS: CFWFOptions = {
-  padding: 3,
-  chartitlesep: "┈",
-  chardescsep: "┄",
-  chartabletop: "━",
-  chartablemiddle: "─",
-  chartablebottom: "━",
-  charyamlsep: "╌",
-};
+import { Align } from "./types.ts";
 
 export async function readTextFile(filename: string): Promise<string> {
   const r = /https?\:\/\//;
