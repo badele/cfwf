@@ -1,34 +1,35 @@
-import { CFWFOPTIONS, NamedArray } from "./types.ts";
+import { TableType } from "./types.ts";
 import * as modcsv from "https://deno.land/std@0.204.0/csv/mod.ts";
-import { readTextFile } from "./utils.ts";
+import { CHARMARKERS, readTextFile } from "./utils.ts";
+import * as path from "https://deno.land/std@0.205.0/path/mod.ts";
 import { existsSync } from "https://deno.land/std@0.205.0/fs/exists.ts";
 import { CFWF } from "./cfwf.ts";
 
 ///////////////////////////////////////////////////////////////////////////////
 // CSV
 // /////////////////////////////////////////////////////////////////////////////
-export async function readCSVFile(filename: string): Promise<NamedArray> {
+export async function readDecodedCSVFile(filename: string): Promise<TableType> {
   const content = await readTextCSVFile(filename);
-  return getCSVObject(content);
+  const ext = path.extname(filename);
+  const tablename = path.basename(filename, ext);
+
+  return decodeCSVContent(tablename, content);
 }
 
 export async function readTextCSVFile(filename: string): Promise<string> {
   return await readTextFile(filename);
 }
 
-export function getCSVObject(content: string): NamedArray {
-  let csv: NamedArray = {
-    columns: [],
-    rows: [],
-  };
+export function decodeCSVContent(
+  tablename: string,
+  content: string,
+): TableType {
   const lines = modcsv.parse(content);
-
-  csv = {
+  return {
+    tablename: tablename,
     columns: lines[0],
     rows: lines.slice(1),
   };
-
-  return csv;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -36,11 +37,11 @@ export function getCSVObject(content: string): NamedArray {
 // /////////////////////////////////////////////////////////////////////////////
 export async function readCFWFFile(filename: string): Promise<CFWF> {
   const content = await readTextCFWFFile(filename);
-  return getCFWFObject(content);
+  return decodeCFWFContent(content);
 }
 
 export async function readTextCFWFFile(filename: string): Promise<string> {
-  const charyamlsep = CFWFOPTIONS.charyamlsep ?? "╌";
+  const charyamlsep = CHARMARKERS.charyamlsep ?? "╌";
 
   const metaname = filename.replace(".cfwf", ".yaml");
   if (existsSync(metaname) === true) {
@@ -60,7 +61,7 @@ export async function readTextCFWFFile(filename: string): Promise<string> {
   }
 }
 
-export function getCFWFObject(content: string): CFWF {
+export function decodeCFWFContent(content: string): CFWF {
   const cfwf = new CFWF({});
   cfwf.importCFWF(content);
   return cfwf;

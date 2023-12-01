@@ -1,26 +1,17 @@
 import {
   Align,
   CFWFDataset,
-  CFWFOPTIONS,
-  CFWFRaw,
   DatasetType,
-  NamedArray,
+  FormatCFWF,
   TableType,
 } from "./types.ts";
 import { AvailableFonts } from "https://deno.land/x/deno_figlet@1.0.0/src/types.ts";
 import { existsSync } from "https://deno.land/std@0.205.0/fs/exists.ts";
-import { align, getMaxWidth, max, searchMarker } from "./utils.ts";
+import { align, CHARMARKERS, getMaxWidth, max, searchMarker } from "./utils.ts";
 import { modfmt, modyaml, text } from "../deps.ts";
 import { version } from "./version.ts";
 
 const footertitle = "cfwf@{VERSION} - https://github.com/badele/cfwf";
-const padding = CFWFOPTIONS.padding ?? 3;
-const chartitlesep = CFWFOPTIONS.chartitlesep ?? "┈";
-const chardescsep = CFWFOPTIONS.chardescsep ?? "┄";
-const chartabletop = CFWFOPTIONS.chartabletop ?? "━";
-const chartablemiddle = CFWFOPTIONS.chartablemiddle ?? "─";
-const chartablebottom = CFWFOPTIONS.chartablebottom ?? "━";
-const charyamlsep = CFWFOPTIONS.charyamlsep ?? "╌";
 
 export class CFWF {
   config: CFWFDataset;
@@ -31,7 +22,7 @@ export class CFWF {
 
   constructor(dsconfig: CFWFDataset) {
     dsconfig.dataset = dsconfig.dataset || {};
-    dsconfig.tables = dsconfig.tables || {};
+    dsconfig.tables = dsconfig.tables || [];
 
     this.config = dsconfig;
     this.generatedtitle = [];
@@ -66,37 +57,10 @@ export class CFWF {
     if (params) Object.assign(dataset, params);
   }
 
-  addTable(tablename: string, params: TableType): void {
-    const tables = this.config.tables || {};
-    const table = tables[tablename] || {};
+  addTable(table: TableType): void {
+    const tables = this.config.tables || [];
 
-    const dataset = this.config.dataset || {};
-    dataset.metadatas = dataset.metadatas || {};
-    dataset.metadatas.orders = dataset.metadatas.orders || [];
-    dataset.metadatas.orders.push(tablename);
-
-    if (params) Object.assign(table, params);
-
-    tables[tablename] = table;
-  }
-
-  getDatas(): Record<string, NamedArray> {
-    const tables = this.config?.tables || {};
-
-    const orders = this.config?.dataset?.metadatas?.orders || [];
-    const result: Record<string, NamedArray> = {};
-
-    for (const tablename of orders) {
-      const table = tables[tablename] as TableType;
-      if (table) {
-        result[tablename] = {
-          columns: table.columns || [],
-          rows: table.rows || [],
-        };
-      }
-    }
-
-    return result;
+    tables.push({ ...table });
   }
 
   async saveCFWF(
@@ -122,6 +86,13 @@ export class CFWF {
   }
 
   importCFWF(content: string): void {
+    const chartitlesep = CHARMARKERS.chartitlesep ?? "┈";
+    const chardescsep = CHARMARKERS.chardescsep ?? "┄";
+    const chartabletop = CHARMARKERS.chartabletop ?? "━";
+    const chartablemiddle = CHARMARKERS.chartablemiddle ?? "─";
+    const chartablebottom = CHARMARKERS.chartablebottom ?? "━";
+    const charyamlsep = CHARMARKERS.charyamlsep ?? "╌";
+
     let lastmarkerpos = 0;
     let tabletopmarkerpos = 0;
     let tablebottommarkerpos = 0;
@@ -141,6 +112,7 @@ export class CFWF {
     ) as CFWFDataset;
 
     const dataset = this.config.dataset || {};
+    const tables = this.config.tables || [];
 
     if (descmarkerpos > -1) {
       dataset.description = lines.slice(
@@ -150,7 +122,10 @@ export class CFWF {
     }
 
     let hastable = searchMarker(lines, chartabletop, lastmarkerpos);
+
+    let tblidx = -1;
     while (hastable > -1) {
+      tblidx++;
       tabletopmarkerpos = searchMarker(lines, chartabletop, lastmarkerpos);
       if (tabletopmarkerpos > -1) {
         // search table
@@ -164,8 +139,8 @@ export class CFWF {
         tablesubtitlepos = tabletopmarkerpos - 2;
         const tablename = lines[tabletablenamepos];
 
-        this.config.tables = this.config.tables || {};
-        const table = this.config.tables[tablename];
+        const table = tables[tblidx] || {};
+        table.tablename = tablename;
 
         table.subtitle = lines[tablesubtitlepos];
         table.description = lines.slice(
@@ -219,15 +194,20 @@ export class CFWF {
         table.rows = rows;
 
         lastmarkerpos = tablebottommarkerpos + 1;
-
         hastable = searchMarker(lines, chartabletop, lastmarkerpos);
       }
     }
-
-    // console.log("GETDATAS", this.getDatas());
   }
 
-  async outputCFWF(separate: boolean): Promise<CFWFRaw> {
+  async outputCFWF(separate: boolean): Promise<FormatCFWF> {
+    const padding = CHARMARKERS.padding ?? 3;
+    const chartitlesep = CHARMARKERS.chartitlesep ?? "┈";
+    const chardescsep = CHARMARKERS.chardescsep ?? "┄";
+    const chartabletop = CHARMARKERS.chartabletop ?? "━";
+    const chartablemiddle = CHARMARKERS.chartablemiddle ?? "─";
+    const chartablebottom = CHARMARKERS.chartablebottom ?? "━";
+    const charyamlsep = CHARMARKERS.charyamlsep ?? "╌";
+
     const lines: string[] = [];
     let maxwidthdescription = 0;
 
@@ -244,7 +224,7 @@ export class CFWF {
     };
 
     dataset = dataset || defaultDataset;
-    tables = tables || {};
+    tables = tables || [];
     const metadatas = dataset.metadatas || {};
 
     let { title, generatedtitle, description } = dataset;
@@ -284,10 +264,8 @@ export class CFWF {
     }
 
     // Generate tables
-    const tablenames = metadatas.orders || [];
-    for (const tablename of tablenames) {
-      const table = tables[tablename];
-
+    for (const table of tables) {
+      const tablename = table.tablename;
       const defaultTable = {
         title: "",
         description: "",

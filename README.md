@@ -29,8 +29,6 @@ tabular data.
 ```shell
 curl -fsSL https://deno.land/x/install/install.sh | sh
 deno install -A -fn cfwf https://deno.land/x/cfwf@0.1.0/mod.ts
-cfwf convert -i https://media.githubusercontent.com/media/datablist/sample-csv-files/main/files/people/people-100.csv -o /tmp/people.cfwf
-less -S /tmp/people.cfwf
 ```
 
 ## Usage
@@ -57,8 +55,17 @@ Options:
   -S, --separate                - Separate content & metadatas
 ```
 
+#### Convert CSV to CFWF
+
 ```shell
 cfwf convert -i https://media.githubusercontent.com/media/datablist/sample-csv-files/main/files/people/people-100.csv -o /tmp/people.cfwf
+less -S /tmp/people.cfwf
+```
+
+#### Convert CFWF to Multiples CSV
+
+```shell
+cfwf convert -i https://raw.githubusercontent.com/badele/cfwf/main/samples/generated_by_sh.cfwf -o /tmp/people.csv
 less -S /tmp/people.cfwf
 ```
 
