@@ -28,7 +28,7 @@ tabular data.
 
 ```shell
 curl -fsSL https://deno.land/x/install/install.sh | sh
-deno install -A -fn cfwf https://deno.land/x/cfwf@0.1.0/mod.ts
+deno install -A -fn cfwf https://deno.land/x/cfwf@0.2.0/mod.ts
 ```
 
 ## Usage
@@ -37,7 +37,7 @@ deno install -A -fn cfwf https://deno.land/x/cfwf@0.1.0/mod.ts
 
 ```text
 Usage:   cfwf convert --input <intput> --output <output>
-Version: 0.1.0
+Version: 0.2.0
 
 Description:
 
