@@ -7,7 +7,14 @@ import {
 } from "./types.ts";
 import { AvailableFonts } from "https://deno.land/x/deno_figlet@1.0.0/src/types.ts";
 import { existsSync } from "https://deno.land/std@0.205.0/fs/exists.ts";
-import { align, CHARMARKERS, getMaxWidth, max, searchMarker } from "./utils.ts";
+import {
+  align,
+  DEFAULTOPTIONS,
+  getMaxWidth,
+  max,
+  searchMarker,
+  wrapText,
+} from "./utils.ts";
 import { modfmt, modyaml, text } from "../deps.ts";
 import { version } from "./version.ts";
 
@@ -18,7 +25,7 @@ export class CFWF {
 
   // Title
   generatedtitle: string[];
-  maxwidthtitle: number;
+  // maxwidthtitle: number;
 
   constructor(dsconfig: CFWFDataset) {
     dsconfig.dataset = dsconfig.dataset || {};
@@ -26,7 +33,7 @@ export class CFWF {
 
     this.config = dsconfig;
     this.generatedtitle = [];
-    this.maxwidthtitle = 0;
+    // this.maxwidthtitle = 0;
   }
 
   async _generateTitle(): Promise<void> {
@@ -37,18 +44,26 @@ export class CFWF {
     let { title, metadatas } = dataset;
     metadatas = metadatas || {};
 
-    const font = metadatas.font as AvailableFonts ?? "doom";
-    const removetitlelines = metadatas.removetitlelines ?? 2;
+    const font = metadatas.font as AvailableFonts ?? DEFAULTOPTIONS.font;
+    const removetitlelines = metadatas.removetitlelines ??
+      DEFAULTOPTIONS.removetitlelines;
+    const width = metadatas.width ?? DEFAULTOPTIONS.width;
 
     const txttitle = await text(title ?? "", font);
     const ageneratedtitle = txttitle.split("\n").slice(
       0,
       -removetitlelines,
     );
-    const maxwidthtitle = getMaxWidth(ageneratedtitle);
+
+    const maxwidth = getMaxWidth(txttitle.split("\n"));
+    const nbspace = (width - maxwidth) / 2;
+
+    for (let idx = 0; idx < ageneratedtitle.length; idx++) {
+      ageneratedtitle[idx] = " ".repeat(nbspace) +
+        ageneratedtitle[idx].trimEnd();
+    }
 
     this.generatedtitle = ageneratedtitle;
-    this.maxwidthtitle = maxwidthtitle;
   }
 
   setDatasetProperties(params: DatasetType): void {
@@ -86,12 +101,12 @@ export class CFWF {
   }
 
   importCFWF(content: string): void {
-    const chartitlesep = CHARMARKERS.chartitlesep ?? "┈";
-    const chardescsep = CHARMARKERS.chardescsep ?? "┄";
-    const chartabletop = CHARMARKERS.chartabletop ?? "━";
-    const chartablemiddle = CHARMARKERS.chartablemiddle ?? "─";
-    const chartablebottom = CHARMARKERS.chartablebottom ?? "━";
-    const charyamlsep = CHARMARKERS.charyamlsep ?? "╌";
+    const chartitlesep = DEFAULTOPTIONS.chartitlesep;
+    const chardescsep = DEFAULTOPTIONS.chardescsep;
+    const chartabletop = DEFAULTOPTIONS.chartabletop;
+    const chartablemiddle = DEFAULTOPTIONS.chartablemiddle;
+    const chartablebottom = DEFAULTOPTIONS.chartablebottom;
+    const charyamlsep = DEFAULTOPTIONS.charyamlsep;
 
     let lastmarkerpos = 0;
     let tabletopmarkerpos = 0;
@@ -118,7 +133,7 @@ export class CFWF {
       dataset.description = lines.slice(
         titlemarkerpos + 1,
         descmarkerpos,
-      ).join("\n");
+      ).join(" ");
     }
 
     let hastable = searchMarker(lines, chartabletop, lastmarkerpos);
@@ -146,8 +161,7 @@ export class CFWF {
         table.description = lines.slice(
           lastmarkerpos + 1,
           tabletablenamepos - 1,
-        )
-          .join("\n");
+        ).join(" ");
 
         const headerline = lines[tabletopmarkerpos + 1];
         const widthline = lines[tabletopmarkerpos + 2];
@@ -200,16 +214,15 @@ export class CFWF {
   }
 
   async outputCFWF(separate: boolean): Promise<FormatCFWF> {
-    const padding = CHARMARKERS.padding ?? 3;
-    const chartitlesep = CHARMARKERS.chartitlesep ?? "┈";
-    const chardescsep = CHARMARKERS.chardescsep ?? "┄";
-    const chartabletop = CHARMARKERS.chartabletop ?? "━";
-    const chartablemiddle = CHARMARKERS.chartablemiddle ?? "─";
-    const chartablebottom = CHARMARKERS.chartablebottom ?? "━";
-    const charyamlsep = CHARMARKERS.charyamlsep ?? "╌";
+    const padding = DEFAULTOPTIONS.padding;
+    const chartitlesep = DEFAULTOPTIONS.chartitlesep;
+    const chardescsep = DEFAULTOPTIONS.chardescsep;
+    const chartabletop = DEFAULTOPTIONS.chartabletop;
+    const chartablemiddle = DEFAULTOPTIONS.chartablemiddle;
+    const chartablebottom = DEFAULTOPTIONS.chartablebottom;
+    const charyamlsep = DEFAULTOPTIONS.charyamlsep;
 
     const lines: string[] = [];
-    let maxwidthdescription = 0;
 
     const config = structuredClone(this.config);
 
@@ -227,7 +240,8 @@ export class CFWF {
     tables = tables || [];
     const metadatas = dataset.metadatas || {};
 
-    let { title, generatedtitle, description } = dataset;
+    const { title, generatedtitle, description } = dataset;
+    const datasetwidth = metadatas.width ?? DEFAULTOPTIONS.width;
 
     // Compute max dataset title width size
     if (title && title.length > 0) {
@@ -235,17 +249,7 @@ export class CFWF {
     }
     if (generatedtitle) {
       this.generatedtitle = generatedtitle.split("\n");
-      this.maxwidthtitle = getMaxWidth(this.generatedtitle);
     }
-
-    // Compute max dataset description width size
-    if (description && description.length > 0) {
-      description = description.replaceAll("\\n", "\n");
-      const adescription = description.split("\n");
-      maxwidthdescription = getMaxWidth(adescription);
-    }
-    // Compute title or description max size
-    const maxwidthline = max(this.maxwidthtitle, maxwidthdescription);
 
     if (this.generatedtitle && this.generatedtitle.length > 0) {
       lines.push(this.generatedtitle.join("\n"));
@@ -253,14 +257,16 @@ export class CFWF {
         align(
           "center",
           chartitlesep.repeat(3),
-          maxwidthline,
-        ),
+          datasetwidth,
+        ).trimEnd(),
       );
     }
 
     if (description && description.length > 0) {
-      lines.push(description);
-      lines.push(align("center", chardescsep.repeat(3), maxwidthline));
+      lines.push(wrapText(description, datasetwidth).trimEnd());
+      lines.push(
+        align("center", chardescsep.repeat(3), datasetwidth).trimEnd(),
+      );
     }
 
     // Generate tables
@@ -344,7 +350,7 @@ export class CFWF {
       // add tablename and subtitle
       if (table.description) {
         lines.push("");
-        lines.push(table.description);
+        lines.push(wrapText(table.description, datasetwidth).trimEnd());
       }
 
       lines.push("");
@@ -382,7 +388,7 @@ export class CFWF {
       }
 
       // add middle header line separator
-      lines.push(headers.join(""));
+      lines.push(headers.join("").trimEnd());
       lines.push(middlelineheader.join(""));
 
       // Add rows datas
@@ -406,7 +412,7 @@ export class CFWF {
             );
           }
         }
-        lines.push(line.join(""));
+        lines.push(line.join("").trimEnd());
       }
 
       // Add bottom line header

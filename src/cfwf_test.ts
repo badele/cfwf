@@ -2,7 +2,7 @@
 import { CFWF } from "./cfwf.ts";
 import { assertEquals } from "../test_deps.ts";
 import { modyaml } from "../deps.ts";
-import { CHARMARKERS, searchMarker } from "./utils.ts";
+import { DEFAULTOPTIONS, searchMarker } from "./utils.ts";
 import { version } from "./version.ts";
 import { readTextCFWFFile } from "./converter.ts";
 
@@ -12,9 +12,9 @@ const title = "this is a title";
 const comment = "this is a comment";
 const footer = `cfwf@${version} - https://github.com/badele/cfwf`;
 
-const chartitlesep = CHARMARKERS.chartitlesep || "";
-const chardescsep = CHARMARKERS.chardescsep || "";
-const charyamlsep = CHARMARKERS.charyamlsep || "";
+const chartitlesep = DEFAULTOPTIONS.chartitlesep;
+const chardescsep = DEFAULTOPTIONS.chardescsep;
+const charyamlsep = DEFAULTOPTIONS.charyamlsep;
 
 const datas_array = [
   [1, 1, 1, 1, 1],
@@ -215,8 +215,8 @@ test("Title & comment", async () => {
 });
 
 test("Columns and headers columns size from generated_by_sh.cfwf", async () => {
-  const chartabletop = CHARMARKERS.chartabletop || "━";
-  const chartablebottom = CHARMARKERS.chartablebottom || "━";
+  const chartabletop = DEFAULTOPTIONS.chartabletop || "━";
+  const chartablebottom = DEFAULTOPTIONS.chartablebottom || "━";
 
   const content = await readTextCFWFFile("samples/generated_by_sh.cfwf");
   const lines = content.split("\n");
@@ -226,8 +226,8 @@ test("Columns and headers columns size from generated_by_sh.cfwf", async () => {
   const yamlmarkerpos = searchMarker(lines, charyamlsep || "");
 
   assertEquals(8, titlemarkerpos);
-  assertEquals(12, descmarkerpos);
-  assertEquals(125, yamlmarkerpos);
+  assertEquals(11, descmarkerpos);
+  assertEquals(120, yamlmarkerpos);
 
   let beginheadermarker = searchMarker(lines, chartabletop || "");
   let endheadermarker = searchMarker(
@@ -268,7 +268,7 @@ test("Columns and headers columns size from generated_by_sh.cfwf", async () => {
 
   assertEquals(table[table.length - 1].length, table[0].length);
   assertEquals(
-    "year   tourney name      birth nat       winner    ",
+    "year   tourney name      birth nat       winner",
     table[1],
   );
   assertEquals(
@@ -276,7 +276,7 @@ test("Columns and headers columns size from generated_by_sh.cfwf", async () => {
     table[2],
   );
   assertEquals(
-    "2022   Australian Open      ESP       Rafael Nadal ",
+    "2022   Australian Open      ESP       Rafael Nadal",
     table[3],
   );
 });
@@ -401,10 +401,13 @@ test("Number & array", async () => {
   assertEquals(10, descmarkerpos);
   assertEquals(27, yamlmarkerpos);
 
-  const beginheadermarker = searchMarker(lines, CHARMARKERS.chartabletop || "");
+  const beginheadermarker = searchMarker(
+    lines,
+    DEFAULTOPTIONS.chartabletop,
+  );
 
   assertEquals(
-    "Id   larger column   right    center     left ",
+    "Id   larger column   right    center     left",
     lines[beginheadermarker + 1],
   );
   assertEquals(
@@ -412,7 +415,7 @@ test("Number & array", async () => {
     lines[beginheadermarker + 2],
   );
   assertEquals(
-    " 3          12.430     333     33333     333  ",
+    " 3          12.430     333     33333     333",
     lines[beginheadermarker + 5],
   );
 });
@@ -505,5 +508,6 @@ test("Reader & regenerate", async () => {
   await samples.saveCFWF("samples/samples_regenerated.cfwf", false);
 
   const newcontent = await readTextCFWFFile("samples/samples_regenerated.cfwf");
-  assertEquals(newcontent, content);
+
+  assertEquals(content, newcontent);
 });
