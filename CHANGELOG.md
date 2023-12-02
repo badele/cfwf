@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.2.0](https://github.com/badele/cfwf/compare/0.1.0..0.2.0) - 2023-12-02
+#### Features
+- remove order metadata and use an array instead of dict - ([f4d510a](https://github.com/badele/cfwf/commit/f4d510a5cb4d9b145e65167cbc1f089fdde6a7a1)) - [@badele](https://github.com/badele)
+#### Refactoring
+- remove some types - ([41db261](https://github.com/badele/cfwf/commit/41db261a188d6345180722f555d8215d760fede5)) - [@badele](https://github.com/badele)
+
+- - -
+
 ## [0.1.0](https://github.com/badele/cfwf/compare/1f01928591f654b573da7454d513374f0e99f433..0.1.0) - 2023-11-27
 #### Bug Fixes
 - typo CI releaser - ([00bcf92](https://github.com/badele/cfwf/commit/00bcf92f01c87be11894267a86c4e32015cce5af)) - [@badele](https://github.com/badele)
