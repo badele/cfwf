@@ -1,7 +1,7 @@
 // deno run -A samples/initdatas/initdatas/generate_samples.ts
 
 import { CFWF } from "../../src/cfwf.ts";
-import { readCSVFile } from "../../src/converter.ts";
+import { readDecodedCSVFile } from "../../src/converter.ts";
 
 const samples = new CFWF({});
 samples.setDatasetProperties({
@@ -16,8 +16,9 @@ from 2012 to 2022, as well as the list of winners of the\n\
   },
 });
 
-const players = await readCSVFile("samples/initdatas/players.csv");
-samples.addTable("players", {
+const players = await readDecodedCSVFile("samples/initdatas/players.csv");
+samples.addTable({
+  tablename: "players",
   subtitle: "The best players (number of winning matches) beetween 2012-2022",
   description: "",
   columns: players.columns,
@@ -30,10 +31,11 @@ samples.addTable("players", {
   },
 });
 
-const australian_open = await readCSVFile(
+const australian_open = await readDecodedCSVFile(
   "samples/initdatas/australian_open.csv",
 );
-samples.addTable("australian_open", {
+samples.addTable({
+  tablename: "australian_open",
   subtitle: "Australian Open winners beetween 2012-2022",
   description:
 "The Australian Open is a tennis tournament held annually at Melbourne Park\n\
@@ -49,8 +51,9 @@ four Grand Slam tennis events held each year.",
   },
 });
 
-const rgarros = await readCSVFile("samples/initdatas/roland_garros.csv");
-samples.addTable("roland_garros", {
+const rgarros = await readDecodedCSVFile("samples/initdatas/roland_garros.csv");
+samples.addTable({
+  tablename: "roland_garros",
   subtitle: "Roland Garros winners beetween 2012-2022",
   description:
 "The major tennis tournament held over two weeks at the Stade Roland Garros\n\
@@ -68,8 +71,9 @@ currently held on this surface.",
   },
 });
 
-const usopen = await readCSVFile("samples/initdatas/us_open.csv");
-samples.addTable("us_open", {
+const usopen = await readDecodedCSVFile("samples/initdatas/us_open.csv");
+samples.addTable({
+  tablename: "us_open",
   subtitle: "US Open winners beetween 2012-2022",
   description:
 "The US Open Tennis Championships, commonly called the US Open, is a hardcourt tennis\n\
@@ -85,8 +89,9 @@ chronologically the fourth and final Grand Slam tournament of the year.",
   },
 });
 
-const wimbledon = await readCSVFile("samples/initdatas/wimbledon.csv");
-samples.addTable("wimbledon", {
+const wimbledon = await readDecodedCSVFile("samples/initdatas/wimbledon.csv");
+samples.addTable({
+  tablename: "wimbledon",
   subtitle: "Wimbledon winners beetween 2012-2022",
   description:
 "The Championships, commonly known simply as Wimbledon, is the oldest tennis tournament\n\

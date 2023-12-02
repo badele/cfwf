@@ -1,7 +1,7 @@
 export * from "./src/cfwf.ts";
 export * from "./src/types.ts";
 
-import { CFWFDataset, NamedArray } from "./src/types.ts";
+import { CFWFDataset, TableType } from "./src/types.ts";
 import { version } from "./src/version.ts";
 import {
   Command,
@@ -10,7 +10,7 @@ import {
 import { existsSync } from "https://deno.land/std@0.205.0/fs/exists.ts";
 import * as path from "https://deno.land/std@0.205.0/path/mod.ts";
 import { CFWF } from "./src/cfwf.ts";
-import { getCSVObject, readCSVFile } from "./src/converter.ts";
+import { decodeCSVContent, readDecodedCSVFile } from "./src/converter.ts";
 import { readTextFile } from "./src/utils.ts";
 
 // deno-lint-ignore no-explicit-any
@@ -19,7 +19,7 @@ function initDatasetFile(options: any): void {
     dataset: {
       metadatas: {},
     },
-    tables: {},
+    tables: [],
   };
 
   Deno.writeTextFileSync(options.configname, JSON.stringify(cfwf));
@@ -80,60 +80,64 @@ function setDatasetProperties(options: any): void {
 
 // deno-lint-ignore no-explicit-any
 async function convertFile(options: any): Promise<void> {
-  let inputcapacity = false;
-  let outputcapacity = false;
-
   const iext = path.extname(options.input);
   const oext = path.extname(options.output);
-  let namedarray: NamedArray = {
-    columns: [],
-    rows: [],
-  };
+  const tables: TableType[] = [];
 
   // Input
   switch (iext) {
     case ".csv":
-      namedarray = await readCSVFile(options.input);
-      inputcapacity = true;
+      tables.push(await readDecodedCSVFile(options.input));
       break;
+
+    default:
+      throw new Error("Input file format not supported");
   }
 
   // Output
   switch (oext) {
-    case ".cfwf":
-      namedarray = await readCSVFile(options.input);
-      outputcapacity = true;
+    case ".cfwf": {
+      const cfwf = new CFWF({});
+      for (const table of tables) {
+        cfwf.addTable({
+          tablename: table.tablename,
+          columns: table.columns,
+          rows: table.rows,
+          metadatas: {
+            aligns: options.aligns,
+            sources: [
+              options.input,
+            ],
+          },
+        });
+      }
+
+      // namedarray = await readDecodedCSVFile(options.input);
       break;
-  }
+    }
 
-  if (inputcapacity === false) {
-    throw new Error("Input file format not supported");
+    default:
+      throw new Error("Output file format not supported");
   }
-
-  if (outputcapacity === false) {
-    throw new Error("Output file format not supported");
-  }
-
-  const cfwf = new CFWF({});
 
   // cfwf.setDatasetProperties({
   //   title: options.title,
   //   description: options.description,
   // });
 
-  const tablename = options.tablename || path.basename(options.input, iext);
-  cfwf.addTable(tablename, {
-    columns: namedarray.columns,
-    rows: namedarray.rows,
-    metadatas: {
-      aligns: options.aligns,
-      sources: [
-        options.input,
-      ],
-    },
-  });
+  // const tablename = options.tablename || path.basename(options.input, iext);
+  // cfwf.addTable(tablename, {
+  //   columns: namedarray.columns,
+  //   rows: namedarray.rows,
+  //   metadatas: {
+  //     aligns: options.aligns,
+  //     sources: [
+  //       options.input,
+  //     ],
+  //   },
+  // });
 
-  cfwf.saveCFWF(options.output, false);
+  // cfwf.saveCFWF(options.output, false);
 }
 
 // deno-lint-ignore no-explicit-any
@@ -142,13 +146,14 @@ async function addTable(options: any): Promise<void> {
   const cfwf = new CFWF(cfg);
 
   let { tables } = cfg;
-  tables = tables || {};
+  tables = tables || [];
 
   if (!options.tablename) {
     throw new Error("No table name");
   }
 
   const table = tables[options.tablename] || {
+    tablename: options.tablename,
     columns: [],
     rows: [],
   };
@@ -163,7 +168,7 @@ async function addTable(options: any): Promise<void> {
 
   if (options.filename) {
     const content = await readTextFile(options.filename);
-    const datas = getCSVObject(content);
+    const datas = decodeCSVContent(options.filename, content);
 
     if (table.columns && table.columns.length === 0) {
       table.columns = datas.columns;
@@ -193,7 +198,7 @@ async function addTable(options: any): Promise<void> {
 
   // tables[options.tablename] = table;
 
-  cfwf.addTable(options.tablename, table);
+  cfwf.addTable(table);
   Deno.writeTextFileSync(options.configname, JSON.stringify(cfwf.config));
 }
 

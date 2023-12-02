@@ -1,5 +1,14 @@
-import { CFWF } from "./cfwf.ts";
-import { Align } from "./types.ts";
+import { Align, CFWFOptions } from "./types.ts";
+
+export const CHARMARKERS: CFWFOptions = {
+  padding: 3,
+  chartitlesep: "┈",
+  chardescsep: "┄",
+  chartabletop: "━",
+  chartablemiddle: "─",
+  chartablebottom: "━",
+  charyamlsep: "╌",
+};
 
 export async function readTextFile(filename: string): Promise<string> {
   const r = /https?\:\/\//;
@@ -13,12 +22,6 @@ export async function readTextFile(filename: string): Promise<string> {
   }
 
   return content;
-}
-
-export function getCFWFObject(content: string): CFWF {
-  const cfwf = new CFWF({});
-  cfwf.importCFWF(content);
-  return cfwf;
 }
 
 export function max(a: number, b: number): number {

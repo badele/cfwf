@@ -2,9 +2,8 @@
 import { CFWF } from "./cfwf.ts";
 import { assertEquals } from "../test_deps.ts";
 import { modyaml } from "../deps.ts";
-import { searchMarker } from "./utils.ts";
+import { CHARMARKERS, searchMarker } from "./utils.ts";
 import { version } from "./version.ts";
-import { CFWFOPTIONS, CFWFOptions } from "./types.ts";
 import { readTextCFWFFile } from "./converter.ts";
 
 const { test } = Deno;
@@ -13,9 +12,9 @@ const title = "this is a title";
 const comment = "this is a comment";
 const footer = `cfwf@${version} - https://github.com/badele/cfwf`;
 
-const chartitlesep = CFWFOPTIONS.chartitlesep || "";
-const chardescsep = CFWFOPTIONS.chardescsep || "";
-const charyamlsep = CFWFOPTIONS.charyamlsep || "";
+const chartitlesep = CHARMARKERS.chartitlesep || "";
+const chardescsep = CHARMARKERS.chardescsep || "";
+const charyamlsep = CHARMARKERS.charyamlsep || "";
 
 const datas_array = [
   [1, 1, 1, 1, 1],
@@ -216,11 +215,8 @@ test("Title & comment", async () => {
 });
 
 test("Columns and headers columns size from generated_by_sh.cfwf", async () => {
-  const options: CFWFOptions = {
-    chartabletop: "━",
-    chartablemiddle: "─",
-    chartablebottom: "━",
-  };
+  const chartabletop = CHARMARKERS.chartabletop || "━";
+  const chartablebottom = CHARMARKERS.chartablebottom || "━";
 
   const content = await readTextCFWFFile("samples/generated_by_sh.cfwf");
   const lines = content.split("\n");
@@ -233,10 +229,10 @@ test("Columns and headers columns size from generated_by_sh.cfwf", async () => {
   assertEquals(12, descmarkerpos);
   assertEquals(125, yamlmarkerpos);
 
-  let beginheadermarker = searchMarker(lines, options.chartabletop || "");
+  let beginheadermarker = searchMarker(lines, chartabletop || "");
   let endheadermarker = searchMarker(
     lines,
-    options.chartablebottom || "",
+    chartablebottom || "",
     beginheadermarker + 1,
   );
 
@@ -259,12 +255,12 @@ test("Columns and headers columns size from generated_by_sh.cfwf", async () => {
   // australian
   beginheadermarker = searchMarker(
     lines,
-    options.chartabletop || "",
+    chartabletop || "",
     endheadermarker + 1,
   );
   endheadermarker = searchMarker(
     lines,
-    options.chartablebottom || "",
+    chartablebottom || "",
     beginheadermarker + 1,
   );
 
@@ -370,11 +366,11 @@ test("Columns and headers columns size from generated_by_sh.cfwf", async () => {
 // });
 
 test("Number & array", async () => {
-  const options: CFWFOptions = {
-    chartabletop: "━",
-    chartablemiddle: "─",
-    chartablebottom: "━",
-  };
+  // const options: CFWFOptions = {
+  //   chartabletop: "━",
+  //   chartablemiddle: "─",
+  //   chartablebottom: "━",
+  // };
 
   const samples = new CFWF({
     dataset: {
@@ -383,7 +379,8 @@ test("Number & array", async () => {
     },
   });
 
-  samples.addTable("number", {
+  samples.addTable({
+    tablename: "number",
     subtitle: "test numbers",
     description: "This test is used to check the alignment of numbers",
     columns: datas_array_options.columns,
@@ -404,7 +401,7 @@ test("Number & array", async () => {
   assertEquals(10, descmarkerpos);
   assertEquals(27, yamlmarkerpos);
 
-  const beginheadermarker = searchMarker(lines, options.chartabletop || "");
+  const beginheadermarker = searchMarker(lines, CHARMARKERS.chartabletop || "");
 
   assertEquals(
     "Id   larger column   right    center     left ",
@@ -504,6 +501,7 @@ test("Reader & regenerate", async () => {
   const content = await readTextCFWFFile("samples/generated_by_sh.cfwf");
 
   samples.importCFWF(content);
+
   await samples.saveCFWF("samples/samples_regenerated.cfwf", false);
 
   const newcontent = await readTextCFWFFile("samples/samples_regenerated.cfwf");

@@ -1,6 +1,6 @@
 // mod_test.ts
 import { assertEquals } from "../test_deps.ts";
-import { getCSVObject } from "./converter.ts";
+import { readDecodedCSVFile } from "./converter.ts";
 import { align, max } from "./utils.ts";
 
 const { test } = Deno;
@@ -21,12 +21,15 @@ test("Test align", () => {
   assertEquals(align("right", "right", 10), "     right");
 });
 
-test("getCSVObject", () => {
-  const players_txt = Deno.readTextFileSync("samples/initdatas/players.csv");
-  const players = getCSVObject(players_txt);
+test("readDecodedCSV from file", async () => {
+  let { rows, columns } = await readDecodedCSVFile(
+    "samples/initdatas/players.csv",
+  );
 
-  assertEquals(10, players.rows.length);
-  assertEquals(players.columns, [
+  rows = rows || [];
+  columns = columns || [];
+  assertEquals(10, rows.length);
+  assertEquals(columns, [
     "winner_ioc",
     "name_first",
     "name_last",
@@ -34,5 +37,26 @@ test("getCSVObject", () => {
     "height",
     "birth",
     "nbwins",
+  ]);
+});
+
+test("readDecodedCSV from remote file", async () => {
+  let { rows, columns } = await readDecodedCSVFile(
+    "https://media.githubusercontent.com/media/datablist/sample-csv-files/main/files/people/people-100.csv",
+  );
+
+  rows = rows || [];
+  columns = columns || [];
+  assertEquals(100, rows.length);
+  assertEquals(columns, [
+    "Index",
+    "User Id",
+    "First Name",
+    "Last Name",
+    "Sex",
+    "Email",
+    "Phone",
+    "Date of birth",
+    "Job Title",
   ]);
 });
