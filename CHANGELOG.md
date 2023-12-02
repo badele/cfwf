@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.3.0](https://github.com/badele/cfwf/compare/0.2.0..0.3.0) - 2023-12-02
+#### Features
+- Add wrapping description text - ([51cd16b](https://github.com/badele/cfwf/commit/51cd16b53a2fdca9aaa703e1facf3d8e1093177d)) - [@badele](https://github.com/badele)
+#### Miscellaneous Chores
+- update version and docs for 0.2.0 version - ([096cc86](https://github.com/badele/cfwf/commit/096cc8628d0d0c7d49c5344031a8b858b21e495e)) - github-actions
+
+- - -
+
 ## [0.2.0](https://github.com/badele/cfwf/compare/0.1.0..0.2.0) - 2023-12-02
 #### Features
 - remove order metadata and use an array instead of dict - ([f4d510a](https://github.com/badele/cfwf/commit/f4d510a5cb4d9b145e65167cbc1f089fdde6a7a1)) - [@badele](https://github.com/badele)
