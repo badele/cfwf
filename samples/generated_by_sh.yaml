@@ -1,10 +1,10 @@
 ---
 dataset:
   metadatas:
-    generated_with: 'cfwf@0.1.0 - https://github.com/badele/cfwf'
+    generated_with: 'cfwf@0.2.0 - https://github.com/badele/cfwf'
     sources:
       - 'https://github.com/JeffSackmann/tennis_atp'
-  title: '     ATP Tour'
+  title: ATP Tour
 tables:
   - metadatas:
       aligns:

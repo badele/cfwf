@@ -6,14 +6,15 @@ export type FormatCFWF = {
 };
 
 export type CFWFOptions = {
-  padding?: number;
-  chartitlesep?: string;
-  chardescsep?: string;
-  chartabletop?: string;
-  chartablemiddle?: string;
-  chartablebottom?: string;
-  charyamlsep?: string;
-  removetitleline?: number;
+  width: number;
+  padding: number;
+  chartitlesep: string;
+  chardescsep: string;
+  chartabletop: string;
+  chartablemiddle: string;
+  chartablebottom: string;
+  charyamlsep: string;
+  removetitlelines: number;
   // deno-lint-ignore no-explicit-any
   metas?: any;
   font?: string;
@@ -26,6 +27,7 @@ export type DatasetType = {
   description?: string;
   tables?: Record<string, TableType>;
   metadatas?: {
+    width?: number;
     orders?: string[];
     font?: string;
     removetitlelines?: number;

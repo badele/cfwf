@@ -1,7 +1,10 @@
 import { Align, CFWFOptions } from "./types.ts";
 
-export const CHARMARKERS: CFWFOptions = {
+export const DEFAULTOPTIONS: CFWFOptions = {
+  width: 120,
   padding: 3,
+  removetitlelines: 2,
+  font: "doom",
   chartitlesep: "┈",
   chardescsep: "┄",
   chartabletop: "━",
@@ -46,6 +49,25 @@ export function getMaxWidth(lines: string[]): number {
     maxmaintitlesize = max(maxmaintitlesize, lines[idx].length);
   }
   return maxmaintitlesize;
+}
+
+export function wrapText(text: string, width: number): string {
+  const lines: string[] = [];
+  const words = text.split(" ");
+
+  let line = "";
+  for (let idx = 0; idx < words.length; idx++) {
+    const word = words[idx];
+
+    if (line.length + word.length > width) {
+      lines.push(line.trimEnd());
+      line = "";
+    }
+    line += word + " ";
+  }
+  lines.push(line.trimEnd());
+
+  return lines.join("\n");
 }
 
 export function align(align: Align, text: string, maxsize: number): string {
