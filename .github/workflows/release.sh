@@ -2,8 +2,6 @@
 
 TAGVERSION=$1
 
-cog changelog --at "$TAGVERSION" -t full_hash > GITHUB_CHANGELOG.md
-
 # Version
 sed -i "s/\".*\"/\"$TAGVERSION\"/" src/version.ts
 
