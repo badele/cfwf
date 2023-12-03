@@ -25,9 +25,9 @@ jobs:
           git-user: github-actions
           git-user-email: github-actions@github.com
       - name: Generate changelog and update doc & lib version
-        run: cog changelog --at ${{ steps.release.outputs.version }}\
-          -t full_hash > GITHUB_CHANGELOG.md
-
+        run: >-
+          cog changelog --at ${{ steps.release.outputs.version }} -t full_hash >
+          GITHUB_CHANGELOG.md
       - name: Upload github release
         uses: softprops/action-gh-release@v1
         with:
