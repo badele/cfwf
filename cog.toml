@@ -2,7 +2,8 @@
 ignore_merge_commits = true
 branch_whitelist = ["main"]
 pre_bump_hooks = [
-  "echo {{version}}",
+  "echo Releasing the {{version}} version",
+  "./.github/workflows/release.sh {{version}}",
 ]
 post_bump_hooks = [
   "git push",

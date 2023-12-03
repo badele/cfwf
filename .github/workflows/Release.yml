@@ -24,13 +24,9 @@ jobs:
           release: true
           git-user: github-actions
           git-user-email: github-actions@github.com
-      - name: Release new version
-        run: './.github/workflows/release.sh ${{ steps.release.outputs.version }}'
-      - uses: EndBug/add-and-commit@v9
-        with:
-          default_author: github_actions
-          message: "chore: update version and docs for ${{ steps.release.outputs.version }} version"
-          add: '["README.md", "src/version.ts"]'
+      - name: Generate changelog and update doc & lib version
+        run: cog changelog --at ${{ steps.release.outputs.version }}\
+          -t full_hash > GITHUB_CHANGELOG.md
 
       - name: Upload github release
         uses: softprops/action-gh-release@v1
