@@ -58,9 +58,11 @@ export class CFWF {
     const maxwidth = getMaxWidth(txttitle.split("\n"));
     const nbspace = (width - maxwidth) / 2;
 
-    for (let idx = 0; idx < ageneratedtitle.length; idx++) {
-      ageneratedtitle[idx] = " ".repeat(nbspace) +
-        ageneratedtitle[idx].trimEnd();
+    if (nbspace > 0) {
+      for (let idx = 0; idx < ageneratedtitle.length; idx++) {
+        ageneratedtitle[idx] = " ".repeat(nbspace) +
+          ageneratedtitle[idx].trimEnd();
+      }
     }
 
     this.generatedtitle = ageneratedtitle;
