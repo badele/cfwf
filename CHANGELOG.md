@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.3.1](https://github.com/badele/cfwf/compare/0.3.0..0.3.1) - 2023-12-03
+#### Bug Fixes
+- big title size alignment, issue #20 - ([ec604f3](https://github.com/badele/cfwf/commit/ec604f3d34e0cc60160154e429fc1e57d59c95b2)) - [@badele](https://github.com/badele)
+#### Continuous Integration
+- fix workflow yaml file - ([896ff54](https://github.com/badele/cfwf/commit/896ff54eda0c15dc888b528302df4775c3e08b9a)) - [@badele](https://github.com/badele)
+- update releasing method - ([fe75170](https://github.com/badele/cfwf/commit/fe751704ca715940a45add27b82413893c1c5a0f)) - [@badele](https://github.com/badele)
+#### Miscellaneous Chores
+- update version and docs for 0.3.0 version - ([c7e58e8](https://github.com/badele/cfwf/commit/c7e58e8b711ee4724fcc3e08c38f6db052b1d63e)) - github-actions
+
+- - -
+
 ## [0.3.0](https://github.com/badele/cfwf/compare/0.2.0..0.3.0) - 2023-12-02
 #### Features
 - Add wrapping description text - ([51cd16b](https://github.com/badele/cfwf/commit/51cd16b53a2fdca9aaa703e1facf3d8e1093177d)) - [@badele](https://github.com/badele)
