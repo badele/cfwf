@@ -14,6 +14,7 @@ export type CFWFOptions = {
   chartablemiddle: string;
   chartablebottom: string;
   charyamlsep: string;
+  chartabledesc: string;
   removetitlelines: number;
   // deno-lint-ignore no-explicit-any
   metas?: any;

@@ -10,7 +10,8 @@ export const DEFAULTOPTIONS: CFWFOptions = {
   chartabletop: "━",
   chartablemiddle: "─",
   chartablebottom: "━",
-  charyamlsep: "╌",
+  chartabledesc: "╌",
+  charyamlsep: "╴",
 };
 
 export async function readTextFile(filename: string): Promise<string> {
