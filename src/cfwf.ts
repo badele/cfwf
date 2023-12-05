@@ -108,13 +108,13 @@ export class CFWF {
     const chartabletop = DEFAULTOPTIONS.chartabletop;
     const chartablemiddle = DEFAULTOPTIONS.chartablemiddle;
     const chartablebottom = DEFAULTOPTIONS.chartablebottom;
+    const chartabledesc = DEFAULTOPTIONS.chartabledesc;
     const charyamlsep = DEFAULTOPTIONS.charyamlsep;
 
     let lastmarkerpos = 0;
     let tabletopmarkerpos = 0;
     let tablebottommarkerpos = 0;
-    let tabletablenamepos = 0;
-    let tablesubtitlepos = 0;
+    let tabledescpos = 0;
 
     const lines = content.split("\n");
 
@@ -138,32 +138,44 @@ export class CFWF {
       ).join(" ");
     }
 
-    let hastable = searchMarker(lines, chartabletop, lastmarkerpos);
+    let hastable = searchMarker(lines, chartabletop, lastmarkerpos + 1);
 
     let tblidx = -1;
     while (hastable > -1) {
       tblidx++;
-      tabletopmarkerpos = searchMarker(lines, chartabletop, lastmarkerpos);
+      const table = tables[tblidx] || {};
+      tabletopmarkerpos = searchMarker(lines, chartabletop, lastmarkerpos + 1);
+
       if (tabletopmarkerpos > -1) {
-        // search table
+        // search bottom table marker
         tablebottommarkerpos = searchMarker(
           lines,
           chartablebottom,
           tabletopmarkerpos + 1,
         );
 
-        tabletablenamepos = tabletopmarkerpos - 3;
-        tablesubtitlepos = tabletopmarkerpos - 2;
-        const tablename = lines[tabletablenamepos];
-
-        const table = tables[tblidx] || {};
-        table.tablename = tablename;
-
-        table.subtitle = lines[tablesubtitlepos];
-        table.description = lines.slice(
+        // search description marker
+        tabledescpos = searchMarker(
+          lines,
+          chartabledesc,
           lastmarkerpos + 1,
-          tabletablenamepos - 1,
-        ).join(" ");
+        );
+
+        let tablemarkertitlepos = tabletopmarkerpos;
+        if (tabledescpos > -1 && tabledescpos < tabletopmarkerpos) {
+          table.description = lines.slice(
+            tabledescpos + 1,
+            tabletopmarkerpos - 1,
+          ).join(" ");
+          tablemarkertitlepos = tabledescpos;
+        }
+
+        if (lines[tablemarkertitlepos - 3].trim() === "") {
+          table.tablename = lines[tablemarkertitlepos - 2];
+        } else {
+          table.tablename = lines[tablemarkertitlepos - 3];
+          table.subtitle = lines[tablemarkertitlepos - 2];
+        }
 
         const headerline = lines[tabletopmarkerpos + 1];
         const widthline = lines[tabletopmarkerpos + 2];
@@ -222,6 +234,7 @@ export class CFWF {
     const chartabletop = DEFAULTOPTIONS.chartabletop;
     const chartablemiddle = DEFAULTOPTIONS.chartablemiddle;
     const chartablebottom = DEFAULTOPTIONS.chartablebottom;
+    const chartabledesc = DEFAULTOPTIONS.chartabledesc;
     const charyamlsep = DEFAULTOPTIONS.charyamlsep;
 
     const lines: string[] = [];
@@ -275,7 +288,7 @@ export class CFWF {
     for (const table of tables) {
       const tablename = table.tablename;
       const defaultTable = {
-        title: "",
+        tablename: "",
         description: "",
         rows: [],
         columns: [],
@@ -350,11 +363,6 @@ export class CFWF {
         (padding * (columns.length - 1));
 
       // add tablename and subtitle
-      if (table.description) {
-        lines.push("");
-        lines.push(wrapText(table.description, datasetwidth).trimEnd());
-      }
-
       lines.push("");
       if (tablename) {
         lines.push(tablename);
@@ -362,11 +370,20 @@ export class CFWF {
 
       if (table.subtitle) {
         lines.push(table.subtitle);
+      }
+
+      // add table description
+      if (table.description) {
         lines.push("");
+        lines.push(
+          align("center", chartabledesc.repeat(3), datasetwidth).trimEnd(),
+        );
+        lines.push(wrapText(table.description, datasetwidth).trimEnd());
       }
 
       // Add top line header
-      if (chartabletop) lines.push(chartabletop.repeat(headerlinesize));
+      lines.push("");
+      lines.push(chartabletop.repeat(headerlinesize));
 
       // add header columns
       const headers: string[] = [];
@@ -418,7 +435,7 @@ export class CFWF {
       }
 
       // Add bottom line header
-      if (chartablebottom) lines.push(chartablebottom.repeat(headerlinesize));
+      lines.push(chartablebottom.repeat(headerlinesize));
     }
 
     lines.push("");
