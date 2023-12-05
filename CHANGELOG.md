@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.4.0](https://github.com/badele/cfwf/compare/0.3.1..0.4.0) - 2023-12-05
+#### Features
+- update table description format - ([a409c84](https://github.com/badele/cfwf/commit/a409c84b0b17a209876908fa6fc7653c8a540ec5)) - [@badele](https://github.com/badele)
+
+- - -
+
 ## [0.3.1](https://github.com/badele/cfwf/compare/0.3.0..0.3.1) - 2023-12-03
 #### Bug Fixes
 - big title size alignment, issue #20 - ([ec604f3](https://github.com/badele/cfwf/commit/ec604f3d34e0cc60160154e429fc1e57d59c95b2)) - [@badele](https://github.com/badele)
