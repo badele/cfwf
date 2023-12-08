@@ -304,6 +304,7 @@ export class CFWF {
         for (const row of table.rows) {
           for (let cidx = 0; cidx < row.length; cidx++) {
             const col = row[cidx];
+
             if (typeof col === "number") {
               const colvalue = col.toString();
               const dotpos = colvalue.indexOf(".");
@@ -327,10 +328,25 @@ export class CFWF {
           for (let cidx = 0; cidx < row.length; cidx++) {
             const col = row[cidx];
 
-            if (typeof col === "number" && colnbfloat[cidx] > 0) {
-              cols.push(modfmt.sprintf("%.*f", colnbfloat[cidx], col));
-            } else {
-              cols.push(col.toString());
+            switch (typeof col) {
+              case "number": {
+                if (colnbfloat[cidx] > 0) {
+                  cols.push(modfmt.sprintf("%.*f", colnbfloat[cidx], col));
+                } else {
+                  cols.push(col.toString());
+                }
+
+                break;
+              }
+              case "string": {
+                cols.push(col.toString());
+
+                break;
+              }
+              default:
+                cols.push("");
+
+                break;
             }
           }
           srows.push(cols);

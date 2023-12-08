@@ -47,7 +47,7 @@ export type TableType = {
   description?: string;
   columns?: string[];
   // deno-lint-ignore no-explicit-any
-  rows?: any[];
+  rows?: any[][];
   metadatas?: {
     aligns?: string[];
     sources?: string[];

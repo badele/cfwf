@@ -36,7 +36,10 @@ jobs:
       - name: Lint
         run: just lint
 
-      - name: coverage
+      - name: Install requirements
+        run: just install-requirements
+
+      - name: Coverage
         run: just coverage
 
       - name: Upload coverage
@@ -71,7 +74,10 @@ jobs:
         with:
           deno-version: v1.36.0
 
-      - name: coverage
+      - name: Install requirements
+        run: just install-requirements
+
+      - name: Coverage
         run: just coverage
 
       - name: Upload coverage
