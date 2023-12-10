@@ -10,8 +10,7 @@ import {
 import { existsSync } from "https://deno.land/std@0.205.0/fs/exists.ts";
 import * as path from "https://deno.land/std@0.205.0/path/mod.ts";
 import { CFWF } from "./src/cfwf.ts";
-import { decodeCSVContent, readDecodedCSVFile } from "./src/converter.ts";
-import { readTextFile } from "./src/utils.ts";
+import { readCSV } from "./src/converter.ts";
 
 // deno-lint-ignore no-explicit-any
 function initDatasetFile(options: any): void {
@@ -87,7 +86,7 @@ async function convertFile(options: any): Promise<void> {
   // Input
   switch (iext) {
     case ".csv":
-      tables.push(await readDecodedCSVFile(options.input));
+      tables.push(await readCSV(options.input));
       break;
 
     default:
@@ -167,13 +166,12 @@ async function addTable(options: any): Promise<void> {
   }
 
   if (options.filename) {
-    const content = await readTextFile(options.filename);
-    const datas = decodeCSVContent(options.filename, content);
+    const df = await readCSV(options.filename);
 
     if (table.columns && table.columns.length === 0) {
-      table.columns = datas.columns;
+      table.columns = df.columns;
     }
-    table.rows = datas.rows;
+    table.rows = df.rows;
   }
 
   if (options.subtitle) {
@@ -195,8 +193,6 @@ async function addTable(options: any): Promise<void> {
   if (options.aligns) {
     table.metadatas.aligns = options.aligns;
   }
-
-  // tables[options.tablename] = table;
 
   cfwf.addTable(table);
   Deno.writeTextFileSync(options.configname, JSON.stringify(cfwf.config));

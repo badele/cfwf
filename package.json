@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "nodejs-polars": "^0.8.3"
+  }
+}

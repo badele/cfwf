@@ -6,6 +6,10 @@ BROWSER := "chromium"
 @help:
     just -lu --list-heading=$'{{ file_name(justfile()) }} commands:\n'
 
+# Install requirements
+@install-requirements:
+  npm install nodejs-polars
+
 # Check conventional commits
 @conventional-check:
   cog check

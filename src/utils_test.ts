@@ -1,6 +1,6 @@
 // mod_test.ts
 import { assertEquals } from "../test_deps.ts";
-import { readDecodedCSVFile } from "./converter.ts";
+import { readCSV, readCSVFromURL } from "./converter.ts";
 import { align, max } from "./utils.ts";
 
 const { test } = Deno;
@@ -22,7 +22,7 @@ test("Test align", () => {
 });
 
 test("readDecodedCSV from file", async () => {
-  let { rows, columns } = await readDecodedCSVFile(
+  let { rows, columns } = await readCSV(
     "samples/initdatas/players.csv",
   );
 
@@ -41,12 +41,12 @@ test("readDecodedCSV from file", async () => {
 });
 
 test("readDecodedCSV from remote file", async () => {
-  let { rows, columns } = await readDecodedCSVFile(
+  const table = await readCSVFromURL(
     "https://media.githubusercontent.com/media/datablist/sample-csv-files/main/files/people/people-100.csv",
   );
 
-  rows = rows || [];
-  columns = columns || [];
+  const rows = table.rows || [];
+  const columns = table.columns || [];
   assertEquals(100, rows.length);
   assertEquals(columns, [
     "Index",

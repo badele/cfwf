@@ -1,5 +1,12 @@
 .direnv
 .coverage
+
+# Node
+/.npm-global
+/node_modules
+
+.download
+
 samples/initdatas/*.csv
 samples/initdatas/*.db
 samples/initdatas/tennis_atp

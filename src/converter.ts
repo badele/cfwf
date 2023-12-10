@@ -1,36 +1,77 @@
 import { TableType } from "./types.ts";
-import * as modcsv from "https://deno.land/std@0.204.0/csv/mod.ts";
 import { DEFAULTOPTIONS, readTextFile } from "./utils.ts";
 import * as path from "https://deno.land/std@0.205.0/path/mod.ts";
 import { existsSync } from "https://deno.land/std@0.205.0/fs/exists.ts";
 import { CFWF } from "./cfwf.ts";
+import pl from "npm:nodejs-polars@0.8.3";
+import {
+  Destination,
+  download,
+} from "https://deno.land/x/download@v2.0.2/mod.ts";
 
 ///////////////////////////////////////////////////////////////////////////////
 // CSV
 // /////////////////////////////////////////////////////////////////////////////
-export async function readDecodedCSVFile(filename: string): Promise<TableType> {
-  const content = await readTextCSVFile(filename);
+
+export async function readCSV(path: string): Promise<TableType> {
+  const r = /https?\:\/\//;
+
+  if (r.test(path)) {
+    return await readCSVFromURL(path);
+  } else {
+    return readCSVFromFile(path);
+  }
+}
+
+export function readCSVFromFile(filename: string): TableType {
   const ext = path.extname(filename);
   const tablename = path.basename(filename, ext);
 
-  return decodeCSVContent(tablename, content);
-}
-
-export async function readTextCSVFile(filename: string): Promise<string> {
-  return await readTextFile(filename);
-}
-
-export function decodeCSVContent(
-  tablename: string,
-  content: string,
-): TableType {
-  const lines = modcsv.parse(content);
+  const df = pl.readCSV(filename);
   return {
     tablename: tablename,
-    columns: lines[0],
-    rows: lines.slice(1),
+    columns: df.columns,
+    rows: df.rows(),
   };
 }
+
+export async function readCSVFromURL(url: string): Promise<TableType> {
+  const ext = path.extname(url);
+  const tablename = path.basename(url, ext);
+
+  const foldername = "./.download";
+  const filename = `${tablename}.csv`;
+  try {
+    const destination: Destination = {
+      file: filename,
+      dir: foldername,
+    };
+    await download(url, destination);
+  } catch (err) {
+    console.log(err);
+  }
+
+  const df = pl.readCSV(`${foldername}/${filename}`);
+  return {
+    tablename: tablename,
+    columns: df.columns,
+    rows: df.rows(),
+  };
+}
+
+// export async function readTextFile(filename: string): Promise<string> {
+//   const r = /https?\:\/\//;
+//
+//   let content = "";
+//   if (r.test(filename)) {
+//     const resp = await fetch(filename);
+//     content = await resp.text();
+//   } else {
+//     content = await Deno.readTextFile(filename);
+//   }
+//
+//   return content;
+// }
 
 ///////////////////////////////////////////////////////////////////////////////
 // CFWF

@@ -1,7 +1,7 @@
 // deno run -A samples/initdatas/initdatas/generate_samples.ts
 
 import { CFWF } from "../../src/cfwf.ts";
-import { readDecodedCSVFile } from "../../src/converter.ts";
+import { readCSV } from "../../src/converter.ts";
 
 const samples = new CFWF({});
 samples.setDatasetProperties({
@@ -16,7 +16,8 @@ samples.setDatasetProperties({
   },
 });
 
-const players = await readDecodedCSVFile("samples/initdatas/players.csv");
+const players = await readCSV("samples/initdatas/players.csv");
+
 samples.addTable({
   tablename: "players",
   subtitle: "The best players (number of winning matches) beetween 2012-2022",
@@ -31,7 +32,7 @@ samples.addTable({
   },
 });
 
-const australian_open = await readDecodedCSVFile(
+const australian_open = await readCSV(
   "samples/initdatas/australian_open.csv",
 );
 samples.addTable({
@@ -51,7 +52,7 @@ samples.addTable({
   },
 });
 
-const rgarros = await readDecodedCSVFile("samples/initdatas/roland_garros.csv");
+const rgarros = await readCSV("samples/initdatas/roland_garros.csv");
 samples.addTable({
   tablename: "roland_garros",
   subtitle: "Roland Garros winners beetween 2012-2022",
@@ -71,7 +72,7 @@ samples.addTable({
   },
 });
 
-const usopen = await readDecodedCSVFile("samples/initdatas/us_open.csv");
+const usopen = await readCSV("samples/initdatas/us_open.csv");
 samples.addTable({
   tablename: "us_open",
   subtitle: "US Open winners beetween 2012-2022",
@@ -90,7 +91,7 @@ samples.addTable({
   },
 });
 
-const wimbledon = await readDecodedCSVFile("samples/initdatas/wimbledon.csv");
+const wimbledon = await readCSV("samples/initdatas/wimbledon.csv");
 samples.addTable({
   tablename: "wimbledon",
   subtitle: "Wimbledon winners beetween 2012-2022",
