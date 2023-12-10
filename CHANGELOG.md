@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.5.0](https://github.com/badele/cfwf/compare/0.4.0..0.5.0) - 2023-12-10
+#### Features
+- use polars dataframe - ([456445c](https://github.com/badele/cfwf/commit/456445c2af6a5cac4cec0a47be954d09bb727651)) - [@badele](https://github.com/badele)
+
+- - -
+
 ## [0.4.0](https://github.com/badele/cfwf/compare/0.3.1..0.4.0) - 2023-12-05
 #### Features
 - update table description format - ([a409c84](https://github.com/badele/cfwf/commit/a409c84b0b17a209876908fa6fc7653c8a540ec5)) - [@badele](https://github.com/badele)
